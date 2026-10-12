@@ -1,9 +1,13 @@
 import index from "../index.html";
 import { listDirectories } from "./lib/directories";
+import { setHomeDirectory, shortenPath } from "./lib/paths";
 import { readSystemInfo } from "./lib/system-info";
 import { readTheme, saveTheme, ThemeApiError } from "./lib/theme-api";
 
 const port = Number(process.env.PORT ?? 4444);
+
+// Match the UI: shorten absolute paths in the console against the host home directory.
+setHomeDirectory(readSystemInfo().home);
 
 const json = (data: unknown, status = 200): Response =>
 	new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json" } });
@@ -44,13 +48,13 @@ const server = Bun.serve({
 					logError("🟠", "Load rejected: missing ?dir query parameter");
 					return json({ message: "Missing ?dir query parameter" }, 400);
 				}
-				log("📂", `Loading theme from ${dir}`);
+				log("📂", `Loading theme from ${shortenPath(dir)}`);
 				try {
 					const theme = await readTheme(dir);
 					const errors = theme.issues.filter((issue) => issue.level === "error").length;
 					log(
 						"✅",
-						`Loaded theme from ${theme.dir} — ${theme.issues.length} issue(s), ${errors} error(s)`
+						`Loaded theme from ${shortenPath(theme.dir)} — ${theme.issues.length} issue(s), ${errors} error(s)`
 					);
 					return json({
 						dir: theme.dir,
@@ -59,7 +63,7 @@ const server = Bun.serve({
 						issues: theme.issues
 					});
 				} catch (error) {
-					return errorResponse(error, `Load theme from ${dir}`);
+					return errorResponse(error, `Load theme from ${shortenPath(dir)}`);
 				}
 			},
 			POST: async (request) => {
@@ -73,13 +77,16 @@ const server = Bun.serve({
 						logError("🟠", "Save rejected: expected { dir, designMd, tokensCss }");
 						return json({ message: "Expected { dir, designMd, tokensCss }" }, 400);
 					}
-					log("💾", `Saving theme to ${body.dir}`);
+					log("💾", `Saving theme to ${shortenPath(body.dir)}`);
 					const issues = await saveTheme(body.dir, {
 						designMd: body.designMd,
 						tokensCss: body.tokensCss
 					});
 					const errors = issues.filter((issue) => issue.level === "error").length;
-					log("✅", `Saved theme to ${body.dir} — ${issues.length} issue(s), ${errors} error(s)`);
+					log(
+						"✅",
+						`Saved theme to ${shortenPath(body.dir)} — ${issues.length} issue(s), ${errors} error(s)`
+					);
 					return json({ ok: true, issues });
 				} catch (error) {
 					return errorResponse(error, "Save theme");
@@ -92,12 +99,12 @@ const server = Bun.serve({
 		"/api/dirs": {
 			GET: async (request) => {
 				const path = new URL(request.url).searchParams.get("path") ?? undefined;
-				log("📁", `Listing directories in ${path ?? process.cwd()}`);
+				log("📁", `Listing directories in ${shortenPath(path ?? process.cwd())}`);
 				try {
 					const listing = await listDirectories(path);
 					return json(listing);
 				} catch (error) {
-					return errorResponse(error, `List directories in ${path ?? process.cwd()}`);
+					return errorResponse(error, `List directories in ${shortenPath(path ?? process.cwd())}`);
 				}
 			}
 		},

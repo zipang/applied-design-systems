@@ -13,3 +13,21 @@ export const getShortDisplayPath = (path: string, home?: string | null): string 
 	if (!base || (path !== base && !path.startsWith(`${base}/`))) return path;
 	return `${HOME_PREFIX}${path.slice(base.length)}`;
 };
+
+/**
+ * The host home directory, published once known. The server publishes it at boot and the
+ * client when `/api/system` resolves, so callers that cannot reach the app state (the
+ * store sets its messages from event handlers) still shorten paths the same way.
+ */
+let homeDirectory = "";
+
+/** Publish the host home directory so {@link shortenPath} can shorten against it. */
+export const setHomeDirectory = (home: string): void => {
+	homeDirectory = home;
+};
+
+/**
+ * Shorten a path against the published home directory. A no-op until
+ * {@link setHomeDirectory} runs, so it degrades to the full path rather than failing.
+ */
+export const shortenPath = (path: string): string => getShortDisplayPath(path, homeDirectory);

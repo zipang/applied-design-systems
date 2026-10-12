@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getShortDisplayPath } from "./paths";
+import { getShortDisplayPath, setHomeDirectory, shortenPath } from "./paths";
 
 describe("getShortDisplayPath", () => {
 	test("collapses the home prefix to a tilde", () => {
@@ -29,5 +29,17 @@ describe("getShortDisplayPath", () => {
 
 	test("ignores a root home directory", () => {
 		expect(getShortDisplayPath("/etc/hosts", "/")).toBe("/etc/hosts");
+	});
+});
+
+describe("shortenPath", () => {
+	test("uses the published home directory", () => {
+		setHomeDirectory("/home/ada");
+		expect(shortenPath("/home/ada/Projects/app")).toBe("~/Projects/app");
+	});
+
+	test("degrades to the full path until a home is published", () => {
+		setHomeDirectory("");
+		expect(shortenPath("/home/ada/Projects/app")).toBe("/home/ada/Projects/app");
 	});
 });

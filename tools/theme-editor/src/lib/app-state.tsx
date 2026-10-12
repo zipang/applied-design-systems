@@ -1,4 +1,4 @@
-import { getShortDisplayPath } from "@lib/paths";
+import { getShortDisplayPath, setHomeDirectory } from "@lib/paths";
 import type { SystemInfo } from "@lib/system-info";
 import { type ThemeStore, useThemeStore } from "@lib/theme-store";
 import type * as React from "react";
@@ -29,7 +29,11 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({ children }) 
 			.then(async (response) => {
 				if (!response.ok) throw new Error("Could not read the system info.");
 				const data = (await response.json()) as SystemInfo;
-				if (!cancelled) setSystem(data);
+				if (!cancelled) {
+					// Publish home so the store, which sits outside this context, shortens paths too.
+					setHomeDirectory(data.home);
+					setSystem(data);
+				}
 			})
 			.catch(() => {
 				// Host facts only shorten displayed paths; the editor works without them.

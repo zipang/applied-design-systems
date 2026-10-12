@@ -22,6 +22,7 @@ import {
 	writeLastThemeName,
 	writeLocalTheme
 } from "./local-themes";
+import { shortenPath } from "./paths";
 import { type Issue, validateContract } from "./validate";
 
 /** Async status of the theme store. */
@@ -185,7 +186,7 @@ export const useThemeStore = (): ThemeStore => {
 			setDirHasContract(true);
 			setDirty(false);
 			setStatus("saved");
-			setMessage(`Opened ${dir}`);
+			setMessage(`Opened ${shortenPath(dir)}`);
 			return true;
 		} catch (error) {
 			setStatus("error");
@@ -213,7 +214,7 @@ export const useThemeStore = (): ThemeStore => {
 			setBaseDesignMd(designMd);
 			setDirty(false);
 			setStatus("saved");
-			setMessage(`Saved to ${dir}`);
+			setMessage(`Saved to ${shortenPath(dir)}`);
 		} catch (error) {
 			setStatus("error");
 			setMessage(errorMessage(error));
