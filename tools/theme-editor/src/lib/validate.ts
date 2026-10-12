@@ -1,3 +1,5 @@
+import { contrastRatio, parseHex } from "../../../color-contrast";
+import { AA_NORMAL, CONTRAST_TOKENS, updateThemeContrastTokens } from "../../../contrast-tokens";
 import { normalizeValue, resolveVariables, stripCssComments } from "./contract";
 import { TOKENS, tokenByVariable } from "./design-system";
 import { fontStackFamilies, googleFontName } from "./fonts";
@@ -133,6 +135,37 @@ export const validateContract = ({
 			target: fontTokens[0]?.variable,
 			message: `Hosted web fonts (${families.join(", ")}) need an @import or @font-face in design-tokens.css.`
 		});
+	}
+
+	// Resolved contrast pairs must equal the value the derivation rule produces.
+	const derived = updateThemeContrastTokens(cssValues);
+	for (const variable of CONTRAST_TOKENS) {
+		const stored = cssValues[variable];
+		const computed = derived[variable];
+		if (stored === undefined || computed === undefined) continue;
+		if (normalizeValue(stored) !== normalizeValue(computed)) {
+			issues.push({
+				level: "error",
+				code: "contrast-mismatch",
+				target: variable,
+				message: `${variable} is "${stored}" but the contrast rule derives "${computed}".`
+			});
+		}
+	}
+
+	// `--color-text` is the base surface foreground by rule, so the pair must reach AA.
+	const textColor = parseHex(resolveVariables(cssValues["--color-text"] ?? "", cssValues));
+	const surfaceColor = parseHex(resolveVariables(cssValues["--color-surface"] ?? "", cssValues));
+	if (textColor && surfaceColor) {
+		const ratio = contrastRatio(textColor, surfaceColor);
+		if (ratio < AA_NORMAL) {
+			issues.push({
+				level: "error",
+				code: "text-surface-contrast",
+				target: "--color-text",
+				message: `--color-text on --color-surface is ${ratio.toFixed(1)}:1, below 4.5:1.`
+			});
+		}
 	}
 
 	return issues;

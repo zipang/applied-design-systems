@@ -88,4 +88,35 @@ describe("validateContract", () => {
 		});
 		expect(issues.some((issue) => issue.code === "missing-font-import")).toBe(false);
 	});
+
+	test("flags a missing contrast token", () => {
+		const cssValues = { ...contract.cssValues };
+		delete cssValues["--color-on-primary"];
+		const issues = validateContract({ ...contract, cssValues });
+		expect(
+			issues.some(
+				(issue) => issue.code === "missing-token" && issue.target === "--color-on-primary"
+			)
+		).toBe(true);
+	});
+
+	test("flags a stale contrast token", () => {
+		const issues = validateContract({
+			...contract,
+			cssValues: { ...contract.cssValues, "--color-on-primary": "#123456" }
+		});
+		expect(
+			issues.some(
+				(issue) => issue.code === "contrast-mismatch" && issue.target === "--color-on-primary"
+			)
+		).toBe(true);
+	});
+
+	test("flags a base text/surface pair below AA", () => {
+		const issues = validateContract({
+			...contract,
+			cssValues: { ...contract.cssValues, "--color-surface": "#111111" }
+		});
+		expect(issues.some((issue) => issue.code === "text-surface-contrast")).toBe(true);
+	});
 });

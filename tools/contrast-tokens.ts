@@ -39,7 +39,10 @@ const TEXT_BASE = "--color-text";
 const TEXT_ON_DARK = "--color-text-ondark";
 
 /** WCAG AA contrast for normal text. */
-const AA_NORMAL = 4.5;
+export const AA_NORMAL = 4.5;
+
+/** The eleven `--color-on-*` variables, in emitted order. */
+export const CONTRAST_TOKENS: string[] = ROLES.map((role) => role.on);
 
 const BLACK: Rgb = { r: 0, g: 0, b: 0 };
 const WHITE: Rgb = { r: 255, g: 255, b: 255 };

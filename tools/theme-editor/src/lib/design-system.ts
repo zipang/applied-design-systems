@@ -252,6 +252,85 @@ export const TOKENS: TokenDef[] = [
 		fallback: "var(--color-surface)"
 	},
 
+	// Colors — resolved contrast pairs (stylesheet-only, auto-calculated)
+	{
+		variable: "--color-on-primary",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-accent",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-secondary",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-tertiary",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-success",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-info",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-warning",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-danger",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-dark",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-alt",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+	{
+		variable: "--color-on-card",
+		group: "colors",
+		kind: "color",
+		required: false,
+		fallback: "var(--color-text)"
+	},
+
 	// Spacing
 	{ variable: "--space-xs", path: "spacing.xs", group: "spacing", kind: "space", required: true },
 	{ variable: "--space-sm", path: "spacing.sm", group: "spacing", kind: "space", required: true },

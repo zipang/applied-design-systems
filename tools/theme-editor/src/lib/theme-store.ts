@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { updateThemeContrastTokens } from "../../../contrast-tokens";
 import DEFAULT_DESIGN_MD from "../../DESIGN.md" with { type: "text" };
 import DEFAULT_TOKENS_CSS from "../../design-tokens.css" with { type: "text" };
 import {
@@ -10,7 +11,7 @@ import {
 	type TypographyField,
 	type TypographyRefs
 } from "./contract";
-import type { TokenValues } from "./design-system";
+import { type TokenValues, tokenByVariable } from "./design-system";
 import {
 	deleteLocalTheme,
 	type LocalTheme,
@@ -88,11 +89,11 @@ export const useThemeStore = (): ThemeStore => {
 	);
 	const [values, setValues] = useState<TokenValues>(() => {
 		const theme = readLastTheme();
-		if (!theme) return initialValues;
+		if (!theme) return updateThemeContrastTokens(initialValues);
 		try {
-			return mergeValues(parseContract(theme.designMd, theme.tokensCss));
+			return updateThemeContrastTokens(mergeValues(parseContract(theme.designMd, theme.tokensCss)));
 		} catch {
-			return initialValues;
+			return updateThemeContrastTokens(initialValues);
 		}
 	});
 	const [typography, setTypography] = useState<TypographyRefs>(() => {
@@ -133,7 +134,11 @@ export const useThemeStore = (): ThemeStore => {
 	}, []);
 
 	const update = useCallback((variable: string, value: string) => {
-		setValues((prev) => ({ ...prev, [variable]: value }));
+		setValues((prev) => {
+			const next = { ...prev, [variable]: value };
+			// The contrast pairs derive from the colors, so a color edit re-derives them.
+			return tokenByVariable(variable)?.kind === "color" ? updateThemeContrastTokens(next) : next;
+		});
 		setDirty(true);
 		setStatus("idle");
 	}, []);
@@ -149,7 +154,7 @@ export const useThemeStore = (): ThemeStore => {
 
 	const reset = useCallback(() => {
 		setBaseDesignMd(DEFAULT_DESIGN_MD);
-		setValues(initialValues);
+		setValues(updateThemeContrastTokens(initialValues));
 		setTypography(parseDesignMd(DEFAULT_DESIGN_MD).typography);
 		setCurrentThemeName("");
 		writeLastThemeName("");
@@ -174,7 +179,7 @@ export const useThemeStore = (): ThemeStore => {
 			}
 			const contract = parseContract(data.designMd, data.tokensCss);
 			setBaseDesignMd(data.designMd);
-			setValues(mergeValues(contract));
+			setValues(updateThemeContrastTokens(mergeValues(contract)));
 			setTypography(parseDesignMd(data.designMd).typography);
 			setCurrentThemeName("");
 			setDirHasContract(true);
@@ -271,7 +276,7 @@ export const useThemeStore = (): ThemeStore => {
 		try {
 			const contract = parseContract(theme.designMd, theme.tokensCss);
 			setBaseDesignMd(theme.designMd);
-			setValues(mergeValues(contract));
+			setValues(updateThemeContrastTokens(mergeValues(contract)));
 			setTypography(parseDesignMd(theme.designMd).typography);
 			writeLastThemeName(name);
 			setCurrentThemeName(name);
