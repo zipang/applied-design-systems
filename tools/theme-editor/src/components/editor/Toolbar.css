@@ -68,27 +68,12 @@
 	flex-wrap: wrap;
 }
 
-.editor-toolbar__dir {
-	width: 22rem;
-	max-width: 40vw;
-	padding: var(--space-xs) var(--space-sm);
-	border: var(--border-sm) solid var(--color-surface-alt);
-	border-radius: var(--rounded-sm);
-	background: var(--color-surface);
-	color: var(--color-text);
+.editor-toolbar__location {
+	max-width: 24rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--color-text-muted);
 	font-family: var(--font-family-mono);
 	font-size: var(--font-size-sm);
-
-	&:read-only {
-		cursor: default;
-
-		&:focus-visible {
-			outline: none;
-		}
-	}
-
-	&:not(:read-only):focus-visible {
-		outline: none;
-		border-color: var(--color-brand-accent);
-	}
 }

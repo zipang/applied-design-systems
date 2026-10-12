@@ -12,7 +12,15 @@ export interface ToolbarProps {
 /** Top bar: the theme name and save state, project directory, load/save/export, reference. */
 export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 	const store = useAppState();
-	const displayDir = useDisplayPath(store.dir);
+	const displayLocation = useDisplayPath(
+		store.location?.kind === "directory" ? store.location.dir : ""
+	);
+	const locationLabel =
+		store.location?.kind === "directory"
+			? `Location: ${displayLocation}`
+			: store.location?.kind === "favorite"
+				? "Location: Favorites"
+				: "Location: Not saved";
 	const errors = store.issues.filter((issue) => issue.level === "error").length;
 
 	const statusLabel =
@@ -44,16 +52,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 				<Pill tone={statusTone} label={statusLabel} />
 				<span className="editor-toolbar__spacer" aria-hidden="true" />
 				<div className="editor-toolbar__actions">
-					<input
-						className="editor-toolbar__dir"
-						type="text"
-						aria-label="Project directory"
-						placeholder="/path/to/project"
-						title={store.dir || undefined}
-						value={displayDir}
-						readOnly
-						spellCheck={false}
-					/>
+					<span
+						className="editor-toolbar__location"
+						title={store.location?.kind === "directory" ? store.location.dir : undefined}
+					>
+						{locationLabel}
+					</span>
 					<Button
 						label="Load"
 						size="sm"
