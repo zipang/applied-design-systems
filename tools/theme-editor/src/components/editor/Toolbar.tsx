@@ -1,3 +1,4 @@
+import { Icon } from "@components/base/Icon";
 import { EditableText } from "@components/editor/EditableText";
 import { Button } from "@components/ui/Button";
 import { Pill, type PillTone } from "@components/ui/Pill";
@@ -9,18 +10,11 @@ export interface ToolbarProps {
 	onShowReference: () => void;
 }
 
-/** Top bar: the theme name and save state, project directory, load/save/export, reference. */
+/** Top bar: the theme name and save state, its location, load/save/export, and reference. */
 export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 	const store = useAppState();
-	const displayLocation = useDisplayPath(
-		store.location?.kind === "directory" ? store.location.dir : ""
-	);
-	const locationLabel =
-		store.location?.kind === "directory"
-			? `Location: ${displayLocation}`
-			: store.location?.kind === "favorite"
-				? "Location: Favorites"
-				: "Location: Not saved";
+	const location = store.location;
+	const displayLocation = useDisplayPath(location?.kind === "directory" ? location.dir : "");
 	const errors = store.issues.filter((issue) => issue.level === "error").length;
 
 	const statusLabel =
@@ -52,12 +46,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 				<Pill tone={statusTone} label={statusLabel} />
 				<span className="editor-toolbar__spacer" aria-hidden="true" />
 				<div className="editor-toolbar__actions">
-					<span
-						className="editor-toolbar__location"
-						title={store.location?.kind === "directory" ? store.location.dir : undefined}
-					>
-						{locationLabel}
-					</span>
 					<Button
 						label="Load"
 						size="sm"
@@ -65,10 +53,35 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 						icon="file"
 						onClick={() => store.requestLoad()}
 					/>
-					<Button label="Save" size="sm" variant="primary" onClick={() => store.requestSave()} />
-					<Button label="Export" size="sm" variant="ghost" onClick={store.requestExport} />
+					<Button
+						label="Save"
+						size="sm"
+						variant="primary"
+						icon="save"
+						onClick={() => store.requestSave()}
+					/>
+					<Button
+						label="Export"
+						size="sm"
+						variant="ghost"
+						icon="download"
+						onClick={store.requestExport}
+					/>
 				</div>
 			</div>
+			<span
+				className="editor-toolbar__location"
+				title={location?.kind === "directory" ? location.dir : undefined}
+			>
+				{location?.kind === "favorite" ? <Icon name="star" size="sm" /> : null}
+				<span className="editor-toolbar__location-text">
+					{location?.kind === "directory"
+						? displayLocation
+						: location?.kind === "favorite"
+							? "Favorites"
+							: "Not saved"}
+				</span>
+			</span>
 			<div className="editor-toolbar__aside">
 				<Button label="Reference" size="sm" variant="ghost" onClick={onShowReference} />
 			</div>

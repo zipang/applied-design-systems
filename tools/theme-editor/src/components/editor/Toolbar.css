@@ -69,11 +69,21 @@
 }
 
 .editor-toolbar__location {
-	max-width: 24rem;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	position: absolute;
+	inset-inline-start: 50%;
+	inset-block-start: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	max-width: min(40vw, 28rem);
 	color: var(--color-text-muted);
 	font-family: var(--font-family-mono);
 	font-size: var(--font-size-sm);
+}
+
+.editor-toolbar__location-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
