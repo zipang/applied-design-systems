@@ -135,6 +135,16 @@ a `var()` fallback to a required token.
 - **Surface dark (`#0f0f0f`)** — Footer, dark sections.
 - **Surface card** — omitted; falls back to `var(--color-surface)`.
 
+### Resolved color contrast pairs
+
+Every colored role above has a companion `--color-on-*` token: the foreground to use
+for text drawn on that role's background. They are **auto-calculated**, not authored —
+a tool picks the theme text color with the higher WCAG 2.1 contrast, or black/white when
+neither meets 4.5:1. They never appear in the front matter. UI components must use them
+for any text on a surface: the `primary`, `accent`, `success`, `warning`, `danger`, and
+`info` button variants, the avatar, and the send button all read their foreground from
+`--color-on-*`.
+
 ### Color variants
 
 Brand and action colors carry `muted` and `active` variants derived

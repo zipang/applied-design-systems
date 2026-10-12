@@ -75,6 +75,12 @@ For each role, resolve the background color and the theme's two text colors
 The output value is `var(--color-text)`, `var(--color-text-ondark)`, `#000000`, or
 `#ffffff`. The computation is deterministic and pure.
 
+Backgrounds and text colors must be plain hex (`#rgb` or `#rrggbb`). When a role's
+background uses another notation (for example `rgba(...)` or `color-mix(...)`), the
+utility leaves that token at its default `var(--color-text)`; the token stays present and
+valid. Three demo themes use an `rgba()` `--color-surface-alt`, so their `--color-on-alt`
+keeps the default.
+
 ### Base surface assumption
 
 `--color-surface` has no `--color-on-*` companion. The rule is that **`--color-text` is the

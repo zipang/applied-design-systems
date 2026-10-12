@@ -173,6 +173,44 @@ At minimum two surfaces are required: `colors.surface.base` (exposed as `--color
 | `colors.surface.dark` | `--color-surface-dark` | N | `var(--color-text)` | Dark surfaces — footer, dark sections |
 | `colors.surface.card` | `--color-surface-card` | N | `var(--color-surface)` | Card, forms surfaces |
 
+## Resolved color contrast pairs
+
+Every colored role has a companion **`--color-on-*`** token: the foreground to use for text
+drawn on that role's background. Unlike the palette tokens, these are **derived, not
+authored**. A tool recomputes them with WCAG 2.1 contrast, so a theme cannot place an
+illegible label on a colored surface.
+
+They are **stylesheet-only** tokens: no front-matter path, no entry in `DESIGN.md` front
+matter. Every one is present in `design-tokens.css` and defaults to `var(--color-text)`.
+
+| Token path | CSS variable | Required | Default | Description |
+|---|---|---|---|---|
+|   | `--color-on-primary` | N | `var(--color-text)` | Text on `colors.brand.primary` |
+|   | `--color-on-accent` | N | `var(--color-text)` | Text on `colors.brand.accent` |
+|   | `--color-on-secondary` | N | `var(--color-text)` | Text on `colors.brand.secondary` |
+|   | `--color-on-tertiary` | N | `var(--color-text)` | Text on `colors.brand.tertiary` |
+|   | `--color-on-success` | N | `var(--color-text)` | Text on `colors.action.success` |
+|   | `--color-on-info` | N | `var(--color-text)` | Text on `colors.action.info` |
+|   | `--color-on-warning` | N | `var(--color-text)` | Text on `colors.action.warning` |
+|   | `--color-on-danger` | N | `var(--color-text)` | Text on `colors.action.danger` |
+|   | `--color-on-dark` | N | `var(--color-text)` | Text on `colors.surface.dark` |
+|   | `--color-on-alt` | N | `var(--color-text)` | Text on `colors.surface.alt` |
+|   | `--color-on-card` | N | `var(--color-text)` | Text on `colors.surface.card` |
+
+**Derivation:** for each role, resolve the background and the theme's two text colors
+(`--color-text`, `--color-text-ondark`) to hex, then pick the text color with the higher
+WCAG 2.1 contrast ratio. A tie goes to `--color-text-ondark`. When the winning ratio is
+below 4.5:1, fall back to pure black or white, whichever contrasts more. A background in a
+non-hex notation (`rgba(...)`, `color-mix(...)`) leaves the token at its default.
+
+**Base surface:** `colors.surface.base` has no `--color-on-*` companion. The rule is that
+`--color-text` is the appropriate contrasting color for `--color-surface`, and the tool
+checks that this pair meets 4.5:1.
+
+**Component rule:** UI components must use these tokens for any text drawn on that role's
+background, for example the `primary`, `accent`, `success`, `warning`, `danger`, and `info`
+button variants. `DESIGN.md` documents the rule in prose (see section 8).
+
 ## Color variants derivation
 
 Brand and action colors carry `muted` and `active` variants that are **derived automatically** from the base color via CSS relative color syntax. These variants are **not design tokens** — they do not appear in the front matter. They live in a dedicated [`color-variants.css`](./references/color-variants.css) file, included after the main design-tokens stylesheet.
@@ -267,6 +305,8 @@ It demonstrates:
 - **Optional tokens omitted** from the front matter with inline comments showing the stylesheet fallback (e.g. `# tertiary: omitted → --color-brand-tertiary: var(--color-brand-primary)`).
 - The `components:` block with a **Link component** example showing how components pick color tokens for their states.
 - The `### Color variants` prose subsection documenting the derived `muted` / `active` rule.
+- The `### Resolved color contrast pairs` prose subsection documenting the derived
+  `--color-on-*` tokens and the rule that components use them for text on a surface.
 - All prose sections in the canonical Google order: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts.
 
 Inline comments in the front matter map each entry back to its CSS variable in the stylesheet.
@@ -296,3 +336,5 @@ Check each of these rules after any edit to the Design System files:
 * **`border` holds border widths only.** Border *colors* are not tokens — components pick the color tokens they need for their border variants under the `components:` key.
 * **Merged paths in YAML** — when several token paths share the same parent object (e.g. `typography.base.fontFamily` and `typography.base.lineHeight`), they collapse into a single `typography.base` entry in the front matter. See section 8.
 * **Hosted web fonts are imported.** `design-tokens.css` must load every hosted web font (for example a Google Font) that a `--font-family-*` value names. Use an `@import` above every rule, or a matching `@font-face`. System-only stacks (`ui-serif`, `Georgia`, …) need none. Re-check this rule after a font-family edit.
+* **Resolved color contrast pairs are present and correct.** Every `--color-on-*` token from section 3 must appear in `design-tokens.css`, and its value must equal what the derivation rule computes from the theme's own colors. A missing or stale pair is a contract error. Re-check this rule after any color edit.
+* **The base text/surface pair meets AA.** `--color-text` must contrast at least 4.5:1 against `--color-surface`. `--color-surface` has no `--color-on-*` companion; `--color-text` is its foreground by rule. Re-check this rule after editing either color.
