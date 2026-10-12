@@ -2,6 +2,7 @@ import { Icon } from "@components/base/Icon";
 import { Text } from "@components/base/Text";
 import { Button } from "@components/ui/Button";
 import { Dialog, DialogContent } from "@components/ui/Dialog";
+import { TextField } from "@components/ui/TextField";
 import { useDisplayPath } from "@lib/app-state";
 import { clsx } from "@lib/clsx";
 import type { DirectoryListing } from "@lib/directories";
@@ -28,6 +29,9 @@ export const FolderPicker: React.FC<FolderPickerProps> = ({ initialPath, onSelec
 	const [listing, setListing] = useState<DirectoryListing | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
+	const [creating, setCreating] = useState(false);
+	const [newName, setNewName] = useState("");
+	const [createError, setCreateError] = useState("");
 	const displayPath = useDisplayPath(listing?.path ?? target ?? "");
 
 	useEffect(() => {
@@ -55,6 +59,25 @@ export const FolderPicker: React.FC<FolderPickerProps> = ({ initialPath, onSelec
 		};
 	}, [target]);
 
+	const create = async (): Promise<void> => {
+		if (!listing) return;
+		setCreateError("");
+		try {
+			const response = await fetch("/api/dirs", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ path: listing.path, name: newName })
+			});
+			const data = (await response.json()) as { path?: string; message?: string };
+			if (!response.ok || !data.path)
+				throw new Error(data.message ?? "Could not create the folder.");
+			setCreating(false);
+			setTarget(data.path);
+		} catch (cause) {
+			setCreateError(errorMessage(cause));
+		}
+	};
+
 	return (
 		<Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
 			<DialogContent
@@ -80,7 +103,38 @@ export const FolderPicker: React.FC<FolderPickerProps> = ({ initialPath, onSelec
 						disabled={loading}
 						onClick={() => setTarget(undefined)}
 					/>
+					<Button
+						label="New folder"
+						size="sm"
+						variant="ghost"
+						disabled={loading || !listing}
+						onClick={() => {
+							setNewName("");
+							setCreateError("");
+							setCreating(true);
+						}}
+					/>
 				</div>
+				{creating ? (
+					<form
+						className="editor-folder-picker__create"
+						onSubmit={(event) => {
+							event.preventDefault();
+							void create();
+						}}
+					>
+						<TextField
+							id="editor-folder-picker-name"
+							label="New folder name"
+							value={newName}
+							onChange={setNewName}
+							placeholder="my-theme"
+							error={createError || undefined}
+						/>
+						<Button label="Create" size="sm" variant="primary" type="submit" />
+						<Button label="Cancel" size="sm" variant="ghost" onClick={() => setCreating(false)} />
+					</form>
+				) : null}
 				<div className="editor-folder-picker__list">
 					{loading ? (
 						<Text size="sm" tone="muted">

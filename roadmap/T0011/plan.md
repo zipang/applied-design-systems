@@ -31,7 +31,7 @@ when the built-in default theme would be shadowed.
 
 ### Phase 1: The name in the contract (pure core)
 
-- [ ] **Task 1: Parse and serialize the front-matter name**
+- [x] **Task 1: Parse and serialize the front-matter name**
   - Description: Add `name` to `ParsedDesignMd` and `Contract`, read from the front matter when
     it is a non-empty string (otherwise `""`); extend `serializeDesignMd` with a `name`
     parameter that writes `frontMatter.name` and deletes the key when empty, preserving all
@@ -43,7 +43,7 @@ when the built-in default theme would be shadowed.
   - Depends: None
   - Scope: S
 
-- [ ] **Task 2: Validate the required theme name**
+- [x] **Task 2: Validate the required theme name**
   - Description: Add a `theme-name` error to `validateContract` when the contract's `name` is
     empty, threading `name` through `ValidationInput` (and from `parseContract`). Add cases to
     `validate.test.ts`: an unnamed contract yields `theme-name`; a named one does not; keep
@@ -55,7 +55,7 @@ when the built-in default theme would be shadowed.
   - Depends: Task 1
   - Scope: S
 
-- [ ] **Task 3: Track the name in the store**
+- [x] **Task 3: Track the name in the store**
   - Description: In `theme-store.ts`, add `themeName` state and `setThemeName(value)` to
     `ThemeStore`; seed it from the active contract's name on init and on `openFromDisk`, and
     restore the bundled default's name in `reset()`. Pass `themeName` to `serializeDesignMd`.
@@ -68,13 +68,13 @@ when the built-in default theme would be shadowed.
   - Scope: S
 
 ### Checkpoint: After Tasks 1-3
-- [ ] `bun test tools/theme-editor/src/lib` passes
-- [ ] The name round-trips through parse → store → serialize
-- [ ] The validator rejects a nameless contract
+- [x] `bun test tools/theme-editor/src/lib` passes
+- [x] The name round-trips through parse → store → serialize
+- [x] The validator rejects a nameless contract
 
 ### Phase 2: Toolbar name and centered container
 
-- [ ] **Task 4: Show and edit the name in the toolbar**
+- [x] **Task 4: Show and edit the name in the toolbar**
   - Description: Replace the static `THEME EDITOR` mark with the inline-editable theme name
     (reuse `EditableText`), wired to `store.themeName` / `store.setThemeName`, committing on
     blur. Keep the status text beside it; show a muted placeholder when the name is empty.
@@ -85,7 +85,7 @@ when the built-in default theme would be shadowed.
   - Depends: Task 3
   - Scope: S
 
-- [ ] **Task 5: Center one container for content, toolbar, and footer**
+- [x] **Task 5: Center one container for content, toolbar, and footer**
   - Description: Add `.app__container` (`width: 100%`, `max-width: 80rem`,
     `margin-inline: auto`, the current horizontal padding) and apply it to `.app__content`,
     a new toolbar inner row, and the footer, so their left edges line up. Drop the ad-hoc
@@ -100,12 +100,12 @@ when the built-in default theme would be shadowed.
   - Scope: S
 
 ### Checkpoint: After Tasks 4-5
-- [ ] The toolbar shows an editable name aligned with the content
-- [ ] `bun run check`, `bun run typecheck`, `bun test` pass
+- [x] The toolbar shows an editable name aligned with the content
+- [x] `bun run check`, `bun run typecheck`, `bun test` pass
 
 ### Phase 3: Directory creation and the tabbed dialogs
 
-- [ ] **Task 6: Add directory creation to the server and picker**
+- [x] **Task 6: Add directory creation to the server and picker**
   - Description: Add `createDirectory(path, name)` to `directories.ts` (rejecting separators,
     traversal, and existing targets) behind a `POST /api/dirs` route, and add a "New folder"
     affordance to `FolderPicker`. Cover the pure validation in `directories.test.ts` and the
@@ -118,7 +118,7 @@ when the built-in default theme would be shadowed.
   - Depends: None
   - Scope: M
 
-- [ ] **Task 7: Split the Load dialog into Directory and Favorites tabs**
+- [x] **Task 7: Split the Load dialog into Directory and Favorites tabs**
   - Description: Wrap the two existing sections of `LoadThemeDialog` in a `Tabs` bar
     (`directory`, `favorites`). Loading either kind seeds `themeName` from the loaded contract.
   - Acceptance: the tabs switch; the directory section keeps its guarded "Load from directory"
@@ -129,7 +129,7 @@ when the built-in default theme would be shadowed.
   - Depends: Task 3
   - Scope: S
 
-- [ ] **Task 8: Rebuild the Save dialog with Directory and Favorites tabs**
+- [x] **Task 8: Rebuild the Save dialog with Directory and Favorites tabs**
   - Description: Replace `ThemeLibrary` with a tabbed Save dialog (`directory`, `favorites`).
     The Favorites tab stores the theme in localStorage under the theme name (prefilled from the
     toolbar) and fires the existing save path. The Directory tab hosts the export flow of
@@ -143,7 +143,7 @@ when the built-in default theme would be shadowed.
   - Depends: Task 7
   - Scope: M
 
-- [ ] **Task 9: Export to a project directory and guard the default theme**
+- [x] **Task 9: Export to a project directory and guard the default theme**
   - Description: Fill the Directory tab: pick or create a directory, ask for the project/theme
     name, write `DESIGN.md` + `design-tokens.css` through `/api/theme`, and adopt the chosen
     directory as the project dir. When the active theme is the built-in `Theme Editor Default`,
@@ -158,10 +158,10 @@ when the built-in default theme would be shadowed.
   - Scope: M
 
 ### Checkpoint: Complete
-- [ ] `bun run check`, `bun run typecheck`, `bun test` pass
-- [ ] The name is shown, editable, saved, and exported; Save/Load have Directory+Favorites tabs
-- [ ] Export creates a directory and writes the contract; the default theme is guarded
-- [ ] All spec success criteria met; ready for review
+- [x] `bun run check`, `bun run typecheck`, `bun test` pass
+- [x] The name is shown, editable, saved, and exported; Save/Load have Directory+Favorites tabs
+- [x] Export creates a directory and writes the contract; the default theme is guarded
+- [x] All spec success criteria met; ready for review
 
 ## Risks and Mitigations
 

@@ -1,5 +1,5 @@
 import index from "../index.html";
-import { listDirectories } from "./lib/directories";
+import { createDirectory, listDirectories } from "./lib/directories";
 import { setHomeDirectory, shortenPath } from "./lib/paths";
 import { readSystemInfo } from "./lib/system-info";
 import { readTheme, saveTheme, ThemeApiError } from "./lib/theme-api";
@@ -105,6 +105,21 @@ const server = Bun.serve({
 					return json(listing);
 				} catch (error) {
 					return errorResponse(error, `List directories in ${shortenPath(path ?? process.cwd())}`);
+				}
+			},
+			POST: async (request) => {
+				try {
+					const body = (await request.json()) as { path?: string; name?: string };
+					if (!body.path || !body.name) {
+						logError("🟠", "Create rejected: expected { path, name }");
+						return json({ message: "Expected { path, name }" }, 400);
+					}
+					log("📁", `Creating folder "${body.name}" in ${shortenPath(body.path)}`);
+					const path = await createDirectory(body.path, body.name);
+					log("✅", `Created folder ${shortenPath(path)}`);
+					return json({ path });
+				} catch (error) {
+					return errorResponse(error, "Create folder");
 				}
 			}
 		},

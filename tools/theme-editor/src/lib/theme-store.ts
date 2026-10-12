@@ -54,6 +54,7 @@ export interface ThemeStore {
 	saveAsLocal: (name: string) => void;
 	loadLocal: (name: string) => void;
 	removeLocal: (name: string) => void;
+	exportTo: (dir: string) => Promise<boolean>;
 	closeSaveDialog: () => void;
 	closeLoadDialog: () => void;
 	exportFiles: () => void;
@@ -61,6 +62,9 @@ export interface ThemeStore {
 
 const initialContract = parseContract(DEFAULT_DESIGN_MD, DEFAULT_TOKENS_CSS);
 const initialValues = mergeValues(initialContract);
+
+/** The name of the tool's bundled default theme, used to detect it on save. */
+export const DEFAULT_THEME_NAME = parseDesignMd(DEFAULT_DESIGN_MD).name;
 
 const download = (name: string, text: string): void => {
 	const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
@@ -208,31 +212,45 @@ export const useThemeStore = (): ThemeStore => {
 		}
 	}, [dir]);
 
-	const saveToDisk = useCallback(async () => {
-		if (issues.some((issue) => issue.level === "error")) {
-			setStatus("error");
-			setMessage("Fix the validation errors before saving.");
-			return;
-		}
-		setStatus("saving");
-		setMessage("");
-		try {
-			const response = await fetch("/api/theme", {
-				method: "POST",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ dir, designMd, tokensCss })
-			});
-			const data = (await response.json()) as { message?: string };
-			if (!response.ok) throw new Error(data.message ?? "Failed to save the project");
-			setBaseDesignMd(designMd);
-			setDirty(false);
-			setStatus("saved");
-			setMessage(`Saved to ${shortenPath(dir)}`);
-		} catch (error) {
-			setStatus("error");
-			setMessage(errorMessage(error));
-		}
-	}, [dir, designMd, tokensCss, issues]);
+	const writeTheme = useCallback(
+		async (targetDir: string): Promise<boolean> => {
+			if (issues.some((issue) => issue.level === "error")) {
+				setStatus("error");
+				setMessage("Fix the validation errors before saving.");
+				return false;
+			}
+			setStatus("saving");
+			setMessage("");
+			try {
+				const response = await fetch("/api/theme", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({ dir: targetDir, designMd, tokensCss })
+				});
+				const data = (await response.json()) as { message?: string };
+				if (!response.ok) throw new Error(data.message ?? "Failed to save the project");
+				// Writing adopts the target, so a later Save keeps using it.
+				setDirState(targetDir);
+				setDirHasContract(true);
+				setBaseDesignMd(designMd);
+				setDirty(false);
+				setStatus("saved");
+				setMessage(`Saved to ${shortenPath(targetDir)}`);
+				return true;
+			} catch (error) {
+				setStatus("error");
+				setMessage(errorMessage(error));
+				return false;
+			}
+		},
+		[designMd, tokensCss, issues]
+	);
+
+	const saveToDisk = useCallback(() => {
+		void writeTheme(dir);
+	}, [writeTheme, dir]);
+
+	const exportTo = useCallback((targetDir: string) => writeTheme(targetDir), [writeTheme]);
 
 	const loadFromDisk = useCallback(async () => {
 		if (await openFromDisk()) setLoadDialogOpen(false);
@@ -348,6 +366,7 @@ export const useThemeStore = (): ThemeStore => {
 		saveAsLocal,
 		loadLocal,
 		removeLocal,
+		exportTo,
 		closeSaveDialog,
 		closeLoadDialog,
 		exportFiles

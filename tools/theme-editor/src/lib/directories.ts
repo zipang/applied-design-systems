@@ -1,5 +1,5 @@
 import type { Dirent } from "node:fs";
-import { readdir, realpath, stat } from "node:fs/promises";
+import { mkdir, readdir, realpath, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { DESIGN_FILE, ThemeApiError, TOKENS_FILE } from "./theme-api";
@@ -82,4 +82,36 @@ export const listDirectories = async (dir?: string): Promise<DirectoryListing> =
 
 	const parent = target === dirname(target) ? null : dirname(target);
 	return { path: target, parent, home: homedir(), hasContract: await hasContract(target), entries };
+};
+
+/** A folder name is one path segment: no separators, no `.`/`..`, no control characters. */
+export const isValidFolderName = (name: string): boolean => {
+	const trimmed = name.trim();
+	if (trimmed === "" || trimmed === "." || trimmed === "..") return false;
+	if (trimmed.includes("/") || trimmed.includes("\\")) return false;
+	// biome-ignore lint/suspicious/noControlCharactersInRegex: the whole point is to reject them
+	return !/[\u0000-\u001f\u007f]/.test(trimmed);
+};
+
+/**
+ * Create one sub-directory inside `parent` and return its resolved path. The name is a
+ * single segment, so the new path can never escape the parent. An existing target is a
+ * conflict, not an overwrite.
+ */
+export const createDirectory = async (parent: string, name: string): Promise<string> => {
+	const trimmed = name.trim();
+	if (!isValidFolderName(trimmed)) {
+		throw new ThemeApiError(`Invalid folder name: "${name}"`, 400);
+	}
+	const base = await resolveDirectory(parent);
+	const target = join(base, trimmed);
+	try {
+		await mkdir(target);
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+			throw new ThemeApiError(`Already exists: "${trimmed}"`, 409);
+		}
+		throw error;
+	}
+	return target;
 };

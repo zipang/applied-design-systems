@@ -18,6 +18,12 @@
 		gap: var(--space-xs);
 	}
 
+	& .editor-folder-picker__create {
+		display: flex;
+		align-items: flex-end;
+		gap: var(--space-sm);
+	}
+
 	& .editor-folder-picker__list {
 		display: flex;
 		flex-direction: column;

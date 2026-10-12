@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { listDirectories } from "./directories";
+import { createDirectory, isValidFolderName, listDirectories } from "./directories";
 import { DESIGN_FILE, ThemeApiError, TOKENS_FILE } from "./theme-api";
 
 let dir = "";
@@ -50,5 +50,39 @@ describe("listDirectories", () => {
 
 	test("rejects a missing directory", async () => {
 		await expect(listDirectories(join(dir, "nope"))).rejects.toBeInstanceOf(ThemeApiError);
+	});
+});
+
+describe("isValidFolderName", () => {
+	test("accepts a plain segment", () => {
+		expect(isValidFolderName("my-theme")).toBe(true);
+		expect(isValidFolderName("  spaced  ")).toBe(true);
+	});
+
+	test("rejects separators, dots, and empty names", () => {
+		for (const bad of ["", "   ", ".", "..", "a/b", "a\\b"]) {
+			expect(isValidFolderName(bad)).toBe(false);
+		}
+	});
+});
+
+describe("createDirectory", () => {
+	test("creates a sub-directory and returns its path", async () => {
+		const created = await createDirectory(dir, "brand-new");
+		expect(created).toBe(join(await realpath(dir), "brand-new"));
+		const listing = await listDirectories(dir);
+		expect(listing.entries.some((entry) => entry.name === "brand-new")).toBe(true);
+	});
+
+	test("refuses an invalid name", async () => {
+		await expect(createDirectory(dir, "../escape")).rejects.toBeInstanceOf(ThemeApiError);
+	});
+
+	test("refuses an existing directory", async () => {
+		await expect(createDirectory(dir, "empty")).rejects.toBeInstanceOf(ThemeApiError);
+	});
+
+	test("refuses a missing parent", async () => {
+		await expect(createDirectory(join(dir, "nope"), "child")).rejects.toBeInstanceOf(ThemeApiError);
 	});
 });
