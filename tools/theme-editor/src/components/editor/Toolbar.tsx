@@ -1,6 +1,7 @@
 import { EditableText } from "@components/editor/EditableText";
 import { FolderPicker } from "@components/editor/FolderPicker";
 import { Button } from "@components/ui/Button";
+import { Pill, type PillTone } from "@components/ui/Pill";
 import { useAppState, useDisplayPath } from "@lib/app-state";
 import type * as React from "react";
 import { useState } from "react";
@@ -17,21 +18,25 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 	const errors = store.issues.filter((issue) => issue.level === "error").length;
 	const [pickerOpen, setPickerOpen] = useState(false);
 
+	const statusLabel =
+		errors > 0
+			? `${errors} error${errors === 1 ? "" : "s"}`
+			: store.dirty
+				? "unsaved changes"
+				: store.message || store.status;
+	const statusTone: PillTone =
+		errors > 0 || store.status === "error"
+			? "danger"
+			: store.dirty
+				? "warning"
+				: store.status === "saved"
+					? "success"
+					: "neutral";
+
 	return (
 		<header className="editor-toolbar">
 			<div className="editor-toolbar__brand">
 				<span className="editor-toolbar__mark">THEME EDITOR</span>
-				<span
-					className="editor-toolbar__status"
-					data-status={store.status}
-					title={store.message || undefined}
-				>
-					{errors > 0
-						? `${errors} error${errors === 1 ? "" : "s"}`
-						: store.dirty
-							? "unsaved changes"
-							: store.message || store.status}
-				</span>
 			</div>
 			<div className="editor-toolbar__center">
 				<EditableText
@@ -39,6 +44,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 					onChange={store.setThemeName}
 					className="editor-toolbar__name"
 				/>
+				<Pill tone={statusTone} label={statusLabel} />
 				<span className="editor-toolbar__spacer" aria-hidden="true" />
 				<div className="editor-toolbar__actions">
 					<div className="editor-toolbar__dir-group">

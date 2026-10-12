@@ -34,24 +34,8 @@
 	color: var(--color-text-muted);
 }
 
-.app__nav-dot {
-	width: 0.5rem;
-	height: 0.5rem;
-	border-radius: var(--rounded-full);
-	background: var(--color-text-muted);
-	transition:
-		transform 0.15s ease,
-		background 0.15s ease;
-}
-
 .app__nav-item.is-active {
 	color: var(--color-text);
-}
-
-.app__nav-item.is-active .app__nav-dot {
-	width: 0.625rem;
-	height: 0.625rem;
-	background: var(--color-text-accent);
 }
 
 .app__nav-label {

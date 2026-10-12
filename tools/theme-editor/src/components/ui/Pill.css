@@ -1,0 +1,33 @@
+.ui-pill {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: var(--rounded-full);
+	background: var(--color-text-muted);
+	transition:
+		width 0.15s ease,
+		height 0.15s ease,
+		background 0.15s ease;
+
+	&.ui-pill--accent {
+		background: var(--color-text-accent);
+	}
+
+	&.ui-pill--success {
+		background: var(--color-action-success);
+	}
+
+	&.ui-pill--warning {
+		background: var(--color-action-warning);
+	}
+
+	&.ui-pill--danger {
+		background: var(--color-action-danger);
+	}
+
+	&.is-active {
+		width: 0.625rem;
+		height: 0.625rem;
+	}
+}

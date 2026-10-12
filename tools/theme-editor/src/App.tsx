@@ -10,6 +10,7 @@ import {
 	SpacingSection,
 	TypographySection
 } from "@components/preview/Preview";
+import { Pill } from "@components/ui/Pill";
 import { useAppState } from "@lib/app-state";
 import { previewStylesheet } from "@lib/apply-preview";
 import { clsx } from "@lib/clsx";
@@ -81,7 +82,10 @@ export const App: React.FC = () => {
 							document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" })
 						}
 					>
-						<span className="app__nav-dot" aria-hidden="true" />
+						<Pill
+							tone={active === section.id ? "accent" : "neutral"}
+							active={active === section.id}
+						/>
 						<span className="app__nav-label">{section.label}</span>
 					</button>
 				))}

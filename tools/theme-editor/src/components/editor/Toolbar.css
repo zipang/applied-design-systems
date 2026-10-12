@@ -57,20 +57,6 @@
 	}
 }
 
-.editor-toolbar__status {
-	font-family: var(--font-family-mono);
-	font-size: var(--font-size-sm);
-	color: var(--color-text-muted);
-
-	&[data-status="error"] {
-		color: var(--color-action-danger);
-	}
-
-	&[data-status="saved"] {
-		color: var(--color-action-success);
-	}
-}
-
 .editor-toolbar__actions {
 	display: flex;
 	align-items: center;
