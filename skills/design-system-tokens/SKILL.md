@@ -29,6 +29,7 @@ Our _Applied Design System_ approach adds new rules that are not found in the or
   - **Stylesheet-only tokens** have no `Token path` (the font-size, font-weight, line-height, and letter-spacing scales). Define them directly in `design-tokens.css`; they do not appear in the front matter.
 - Optional tokens are always defined in `design-tokens.css`. They fall back to a `var()` reference to a required token, or to a documented literal value (for example `--elevation-sm: none`).
 - All size values must be given in `rem` units.
+- A `--font-family-*` token names a font. It does not load one. When a family is a hosted web font, `design-tokens.css` must import it. Use an `@import` at the top of the file, or a matching `@font-face`. Without the import, the token falls back to the local stack.
 
 The next sections will now introduce the full list of available tokens:
 
@@ -43,6 +44,29 @@ Define font family and give each font a semantic role inside: `base` (body), `di
 | `typography.base.fontFamily` | `--font-family-base` | Y | — | Body text and general UI font |
 | `typography.display.fontFamily` | `--font-family-display` | Y | — | Headings and large display text |
 | `typography.mono.fontFamily` | `--font-family-mono` | N | `var(--font-family-base)` | Code, labels, monospaced content |
+
+### Hosted web fonts
+
+A `--font-family-*` value is only a stack of names. The browser fetches nothing. When the
+stack names a hosted web font, the stylesheet must load it. If it does not, the token
+resolves to the fallback. The theme font does not apply.
+
+- Load it from the stylesheet itself. Put the `@import` at the very top of
+  `design-tokens.css`, before the `:root` block and every other rule. CSS honors
+  `@import` only before other rules.
+- Request the weights the theme uses, from `--font-weight-*` (for example `400;500;700`),
+  so no weight is synthesized.
+- A `@font-face` block or another host's stylesheet is also valid. The stylesheet must
+  not depend on the page to load the font.
+- System stacks (`ui-serif, Georgia, serif`, …) name only local fonts and need no import.
+
+```css
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=DM+Serif+Display:wght@400;700&display=swap");
+
+:root {
+	/* … tokens … */
+}
+```
 
 ## Apply a typographic scale
 
@@ -252,7 +276,7 @@ Inline comments in the front matter map each entry back to its CSS variable in t
 | File | Purpose |
 |------|---------|
 | [references/DESIGN.md](./references/DESIGN.md) | Complete annotated example of a `DESIGN.md` file — front matter plus prose sections. Demonstrates required and optional tokens, stylesheet fallbacks, and the Link component example. |
-| [references/design-tokens.css](./references/design-tokens.css) | Complete example of the design-tokens stylesheet. Exposes every token defined in sections 2–7 as a CSS variable inside a single `:root` block. |
+| [references/design-tokens.css](./references/design-tokens.css) | Complete example of the design-tokens stylesheet. Exposes every token defined in sections 2–7 as a CSS variable inside a single `:root` block. The reference theme uses system fonts, so it needs no import. A theme with a hosted web font must open the file with one (section 2). |
 | [references/color-variants.css](./references/color-variants.css) | Derived `muted` / `active` variants for brand and action colors. Include **after** the main design-tokens stylesheet. Not part of the token set. |
 | [references/reset.css](./references/reset.css) | Base CSS reset consuming the theme variables. |
 | [references/utilities.css](./references/utilities.css) | Class-based utilities to apply the theme variables in a Tailwind fashion. |
@@ -271,3 +295,4 @@ Check each of these rules after any edit to the Design System files:
 * **Derived color variants (`muted` / `active`) are NOT tokens.** They must not appear in the front matter. They are generated in `color-variants.css` from the base brand and action colors via HSL relative color syntax. The `DESIGN.md` `## Colors` section documents the derivation rule in prose only.
 * **`border` holds border widths only.** Border *colors* are not tokens — components pick the color tokens they need for their border variants under the `components:` key.
 * **Merged paths in YAML** — when several token paths share the same parent object (e.g. `typography.base.fontFamily` and `typography.base.lineHeight`), they collapse into a single `typography.base` entry in the front matter. See section 8.
+* **Hosted web fonts are imported.** `design-tokens.css` must load every hosted web font (for example a Google Font) that a `--font-family-*` value names. Use an `@import` above every rule, or a matching `@font-face`. System-only stacks (`ui-serif`, `Georgia`, …) need none. Re-check this rule after a font-family edit.
