@@ -79,6 +79,15 @@ paper theme.
 Brand, action, text, and surface roles follow the reference palette. The surface
 tint is derived with `color-mix` over the accent.
 
+### Resolved color contrast pairs
+
+Every colored role above has a companion `--color-on-*` token: the foreground for text
+drawn on that role's background. They are auto-calculated — the theme picks the text color
+with the higher WCAG 2.1 contrast, or black/white when neither meets 4.5:1 — and never
+appear in the front matter. UI components must use them for text on a surface: the
+`primary`, `accent`, `success`, `warning`, `danger`, and `info` button variants
+read their foreground from `--color-on-*`.
+
 ## Typography
 
 Fonts are set per theme (DM Sans, IBM Plex Mono, Space Mono, or Azeret Mono).

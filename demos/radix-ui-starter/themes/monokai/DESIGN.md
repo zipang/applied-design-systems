@@ -110,6 +110,15 @@ elevation, and border widths match the reference theme. Only the colors differ.
 - **Surface alt (`#2f2f2a`)** — Aside panels and alternating sections.
 - **Surface dark (`#1e1f1c`)** — Footer and deep sections.
 
+### Resolved color contrast pairs
+
+Every colored role above has a companion `--color-on-*` token: the foreground for text
+drawn on that role's background. They are auto-calculated — the theme picks the text color
+with the higher WCAG 2.1 contrast, or black/white when neither meets 4.5:1 — and never
+appear in the front matter. UI components must use them for text on a surface: the
+`primary`, `accent`, `success`, `warning`, `danger`, and `info` button variants
+read their foreground from `--color-on-*`.
+
 ### Color variants
 
 Brand and action colors carry derived `muted` and `active` variants in

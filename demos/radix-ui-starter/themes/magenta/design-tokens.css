@@ -40,6 +40,18 @@
 	--color-surface-alt: rgba(255, 0, 255, 0.1);
 	--color-surface-dark: #ff00ff;
 	--color-surface-card: #ffffff;
+	/* --- Colors: resolved contrast pairs (auto-calculated) --- */
+	--color-on-primary: #ffffff;
+	--color-on-accent: var(--color-text-ondark);
+	--color-on-secondary: #ffffff;
+	--color-on-tertiary: var(--color-text-ondark);
+	--color-on-success: #ffffff;
+	--color-on-info: var(--color-text-ondark);
+	--color-on-warning: #ffffff;
+	--color-on-danger: #ffffff;
+	--color-on-dark: var(--color-text-ondark);
+	--color-on-alt: var(--color-text);
+	--color-on-card: var(--color-text-ondark);
 	--space-xs: 0.25rem;
 	--space-sm: 0.5rem;
 	--space-md: 0.75rem;

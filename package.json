@@ -11,7 +11,6 @@
 		"check": "biome check .",
 		"check:fix": "biome check --write .",
 		"format": "biome format --write .",
-		"generate:themes": "bun tools/generate-theme-overrides.ts",
 		"theme-editor": "bun run --cwd tools/theme-editor start",
 		"theme-editor:dev": "bun run --cwd tools/theme-editor dev",
 		"typecheck": "tsc --noEmit && bun run --cwd demos/radix-ui-starter typecheck && bun run --cwd tools/theme-editor typecheck",

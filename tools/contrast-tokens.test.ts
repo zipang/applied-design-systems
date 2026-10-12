@@ -72,12 +72,11 @@ test("does not mutate the input list", () => {
 	expect(next["--color-on-primary"]).toBe("var(--color-text-ondark)");
 });
 
-test("leaves a role untouched when its background is not a plain color", () => {
+test("uses the default when a background is not a plain color", () => {
 	const next = updateThemeContrastTokens({
 		"--color-text": "#111111",
 		"--color-text-ondark": "#ffffff",
-		"--color-surface-alt": "color-mix(in srgb, #fff 50%, #000)",
-		"--color-on-alt": "var(--color-text)"
+		"--color-surface-alt": "color-mix(in srgb, #fff 50%, #000)"
 	});
 
 	expect(next["--color-on-alt"]).toBe("var(--color-text)");

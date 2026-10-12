@@ -90,8 +90,9 @@ const resolveOn = (background: Rgb, textBase: Rgb, textOnDark: Rgb): string => {
 /**
  * Return a copy of `tokenList` with the eleven `--color-on-*` contrast tokens recomputed
  * from its color values. `var()` references resolve against the list itself. The input is
- * not mutated. A role whose background is not a parseable color keeps its current value,
- * so a partially filled list is never corrupted.
+ * not mutated. A role whose background is not a parseable color falls back to the
+ * documented default `var(--color-text)`; when either text color is unparseable the list
+ * is returned unchanged.
  */
 export const updateThemeContrastTokens = (tokenList: TokenList): TokenList => {
 	const textBase = colorOf(tokenList, TEXT_BASE);
@@ -101,8 +102,10 @@ export const updateThemeContrastTokens = (tokenList: TokenList): TokenList => {
 	if (!textBase || !textOnDark) return next;
 
 	for (const { on, background } of ROLES) {
+		// A non-hex background (rgba(), color-mix(), …) has no measurable contrast, so the
+		// role keeps the documented default rather than a stale or missing value.
 		const color = colorOf(tokenList, background);
-		if (color) next[on] = resolveOn(color, textBase, textOnDark);
+		next[on] = color ? resolveOn(color, textBase, textOnDark) : `var(${TEXT_BASE})`;
 	}
 
 	return next;

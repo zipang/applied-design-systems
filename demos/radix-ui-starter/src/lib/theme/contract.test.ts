@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
+import { CONTRAST_TOKENS, updateThemeContrastTokens } from "../../../../../tools/contrast-tokens";
 
 const THEMES_DIR = join(import.meta.dir, "../../../themes");
 const THEME_IDS = readdirSync(THEMES_DIR)
@@ -95,8 +96,13 @@ for (const id of THEME_IDS) {
 		}
 	});
 
-	test(`${id}: has a generated ui-theme-overrides.css`, () => {
-		expect(existsSync(join(THEMES_DIR, id, "ui-theme-overrides.css"))).toBe(true);
+	test(`${id}: contrast pairs match the derivation rule`, () => {
+		const vars = cssVariables(readTheme(id, "design-tokens.css"));
+		const derived = updateThemeContrastTokens(vars);
+
+		for (const variable of CONTRAST_TOKENS) {
+			expect(vars[variable]).toBe(derived[variable]);
+		}
 	});
 
 	test(`${id}: DESIGN.md color values match design-tokens.css`, () => {

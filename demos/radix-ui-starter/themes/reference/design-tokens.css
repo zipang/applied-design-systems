@@ -110,6 +110,18 @@
 	--color-surface-alt: #f2f2f2;
 	--color-surface-dark: #0f0f0f; /* overridden — footer, dark sections      */
 	--color-surface-card: var(--color-surface); /* optional → var(--color-surface) */
+	/* --- Colors: resolved contrast pairs (auto-calculated) --- */
+	--color-on-primary: var(--color-text-ondark);
+	--color-on-accent: var(--color-text);
+	--color-on-secondary: var(--color-text-ondark);
+	--color-on-tertiary: var(--color-text-ondark);
+	--color-on-success: var(--color-text-ondark);
+	--color-on-info: var(--color-text-ondark);
+	--color-on-warning: var(--color-text);
+	--color-on-danger: var(--color-text-ondark);
+	--color-on-dark: var(--color-text-ondark);
+	--color-on-alt: var(--color-text);
+	--color-on-card: var(--color-text);
 
 	/* ============================================================================
        3. SPACING — 4px linear scale
