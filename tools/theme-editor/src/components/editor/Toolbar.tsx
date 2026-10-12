@@ -19,25 +19,27 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 
 	return (
 		<header className="editor-toolbar">
-			<div className="app__container editor-toolbar__inner">
-				<div className="editor-toolbar__brand">
-					<EditableText
-						value={store.themeName}
-						onChange={store.setThemeName}
-						className="editor-toolbar__name"
-					/>
-					<span
-						className="editor-toolbar__status"
-						data-status={store.status}
-						title={store.message || undefined}
-					>
-						{errors > 0
-							? `${errors} error${errors === 1 ? "" : "s"}`
-							: store.dirty
-								? "unsaved changes"
-								: store.message || store.status}
-					</span>
-				</div>
+			<div className="editor-toolbar__brand">
+				<span className="editor-toolbar__mark">THEME EDITOR</span>
+				<span
+					className="editor-toolbar__status"
+					data-status={store.status}
+					title={store.message || undefined}
+				>
+					{errors > 0
+						? `${errors} error${errors === 1 ? "" : "s"}`
+						: store.dirty
+							? "unsaved changes"
+							: store.message || store.status}
+				</span>
+			</div>
+			<div className="editor-toolbar__center">
+				<EditableText
+					value={store.themeName}
+					onChange={store.setThemeName}
+					className="editor-toolbar__name"
+				/>
+				<span className="editor-toolbar__spacer" aria-hidden="true" />
 				<div className="editor-toolbar__actions">
 					<div className="editor-toolbar__dir-group">
 						<input

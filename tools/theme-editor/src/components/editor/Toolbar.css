@@ -2,17 +2,14 @@
 	position: sticky;
 	top: 0;
 	z-index: 20;
-	background: var(--color-surface-card);
-	border-bottom: var(--border-sm) solid var(--color-surface-alt);
-	padding-block: var(--space-sm);
-}
-
-.editor-toolbar__inner {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
 	gap: var(--space-md);
 	flex-wrap: wrap;
+	padding-block: var(--space-sm);
+	padding-inline: var(--space-lg);
+	background: var(--color-surface-card);
+	border-bottom: var(--border-sm) solid var(--color-surface-alt);
 }
 
 .editor-toolbar__brand {
@@ -21,12 +18,37 @@
 	gap: var(--space-sm);
 }
 
+.editor-toolbar__mark {
+	font-family: var(--font-family-mono);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--letter-spacing-wide);
+	color: var(--color-text);
+}
+
+/* The centered column: same max-width as the main sections, holding the theme name and
+   the actions. The tool mark sits to its left, in the header's full width. */
+.editor-toolbar__center {
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+	flex: 1;
+	width: 100%;
+	max-width: 80rem;
+	margin-inline: auto;
+}
+
+.editor-toolbar__spacer {
+	flex: 1;
+}
+
 .editor-toolbar__name {
 	font-family: var(--font-family-mono);
 	font-size: var(--font-size-sm);
 	font-weight: var(--font-weight-bold);
 	letter-spacing: var(--letter-spacing-wide);
 	color: var(--color-text);
+	white-space: nowrap;
 
 	&:empty::before {
 		content: "Untitled theme";
