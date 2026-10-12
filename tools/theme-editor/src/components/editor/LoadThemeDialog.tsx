@@ -1,5 +1,6 @@
 import { Heading } from "@components/base/Heading";
 import { Text } from "@components/base/Text";
+import { FolderPicker } from "@components/editor/FolderPicker";
 import { Button } from "@components/ui/Button";
 import { Dialog, DialogContent } from "@components/ui/Dialog";
 import { Tabs } from "@components/ui/Tabs";
@@ -12,33 +13,26 @@ const formatSavedAt = (value: number): string =>
 	value ? new Date(value).toLocaleString() : "unknown time";
 
 /**
- * The load dialog. It offers the two places a theme can come from: the project
- * directory on disk, or a theme saved in this browser's localStorage. The disk option
- * is only offered when the directory is known to be loadable; a typed path stays
- * enabled and reports its error inline.
+ * The load dialog. Two tabs split the places a theme can come from: a project directory
+ * chosen with the folder picker, and the themes saved in this browser. Loading records the
+ * theme's location, so a later Save writes straight back to it.
  */
 export const LoadThemeDialog: React.FC = () => {
 	const {
 		dir,
-		dirHasContract,
 		localThemes,
 		currentThemeName,
 		status,
 		message,
-		loadFromDisk,
+		setDir,
+		loadFromDir,
 		loadLocal,
 		removeLocal,
 		closeLoadDialog
 	} = useAppState();
 	const displayDir = useDisplayPath(dir);
 	const [tab, setTab] = useState("directory");
-
-	const diskReady = Boolean(dir) && dirHasContract !== false;
-	const diskHint = !dir
-		? "Choose a project directory with the … button first."
-		: dirHasContract === false
-			? "This directory has no DESIGN.md + design-tokens.css."
-			: "";
+	const [pickerOpen, setPickerOpen] = useState(false);
 
 	return (
 		<Dialog open onOpenChange={(open) => (open ? undefined : closeLoadDialog())}>
@@ -61,18 +55,12 @@ export const LoadThemeDialog: React.FC = () => {
 						<span className="editor-load-theme__dir" title={dir || undefined}>
 							{displayDir || "No directory selected"}
 						</span>
-						{diskHint ? (
-							<Text size="sm" tone="muted">
-								{diskHint}
-							</Text>
-						) : null}
 						<Button
-							label="Load from directory"
+							label="Choose a directory…"
 							size="sm"
 							variant="secondary"
-							disabled={!diskReady}
 							loading={status === "loading"}
-							onClick={loadFromDisk}
+							onClick={() => setPickerOpen(true)}
 						/>
 					</section>
 				) : (
@@ -120,6 +108,17 @@ export const LoadThemeDialog: React.FC = () => {
 					<Button label="Close" size="sm" variant="ghost" onClick={closeLoadDialog} />
 				</div>
 			</DialogContent>
+			{pickerOpen ? (
+				<FolderPicker
+					initialPath={dir}
+					onSelect={(path, hasContract) => {
+						setDir(path, hasContract);
+						setPickerOpen(false);
+						void loadFromDir(path);
+					}}
+					onClose={() => setPickerOpen(false)}
+				/>
+			) : null}
 		</Dialog>
 	);
 };

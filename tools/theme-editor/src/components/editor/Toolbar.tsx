@@ -1,22 +1,19 @@
 import { EditableText } from "@components/editor/EditableText";
-import { FolderPicker } from "@components/editor/FolderPicker";
 import { Button } from "@components/ui/Button";
 import { Pill, type PillTone } from "@components/ui/Pill";
 import { useAppState, useDisplayPath } from "@lib/app-state";
 import type * as React from "react";
-import { useState } from "react";
 import "./Toolbar.css";
 
 export interface ToolbarProps {
 	onShowReference: () => void;
 }
 
-/** Top bar: project directory, load/save/export/reset, and the token reference. */
+/** Top bar: the theme name and save state, project directory, load/save/export, reference. */
 export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 	const store = useAppState();
 	const displayDir = useDisplayPath(store.dir);
 	const errors = store.issues.filter((issue) => issue.level === "error").length;
-	const [pickerOpen, setPickerOpen] = useState(false);
 
 	const statusLabel =
 		errors > 0
@@ -47,25 +44,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 				<Pill tone={statusTone} label={statusLabel} />
 				<span className="editor-toolbar__spacer" aria-hidden="true" />
 				<div className="editor-toolbar__actions">
-					<div className="editor-toolbar__dir-group">
-						<input
-							className="editor-toolbar__dir"
-							type="text"
-							aria-label="Project directory"
-							placeholder="/path/to/project"
-							title={store.dir || undefined}
-							value={displayDir}
-							readOnly
-							spellCheck={false}
-						/>
-						<Button
-							label="…"
-							size="sm"
-							variant="secondary"
-							ariaLabel="Browse for a project directory"
-							onClick={() => setPickerOpen(true)}
-						/>
-					</div>
+					<input
+						className="editor-toolbar__dir"
+						type="text"
+						aria-label="Project directory"
+						placeholder="/path/to/project"
+						title={store.dir || undefined}
+						value={displayDir}
+						readOnly
+						spellCheck={false}
+					/>
 					<Button
 						label="Load"
 						size="sm"
@@ -80,16 +68,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 			<div className="editor-toolbar__aside">
 				<Button label="Reference" size="sm" variant="ghost" onClick={onShowReference} />
 			</div>
-			{pickerOpen ? (
-				<FolderPicker
-					initialPath={store.dir}
-					onSelect={(path, hasContract) => {
-						store.setDir(path, hasContract);
-						setPickerOpen(false);
-					}}
-					onClose={() => setPickerOpen(false)}
-				/>
-			) : null}
 		</header>
 	);
 };

@@ -53,7 +53,7 @@ export interface ThemeStore {
 	updateTypography: (style: string, field: TypographyField, variable: string) => void;
 	reset: () => void;
 	requestLoad: () => void;
-	loadFromDisk: () => void;
+	loadFromDir: (dir: string) => void;
 	requestSave: () => void;
 	requestExport: () => void;
 	saveAsLocal: (name: string) => void;
@@ -190,12 +190,12 @@ export const useThemeStore = (): ThemeStore => {
 		setMessage("Restored the theme editor's default Design System.");
 	}, []);
 
-	const openFromDisk = useCallback(async (): Promise<boolean> => {
-		if (!dir) return false;
+	const openFromDisk = useCallback(async (targetDir: string): Promise<boolean> => {
+		if (!targetDir) return false;
 		setStatus("loading");
 		setMessage("");
 		try {
-			const response = await fetch(`/api/theme?dir=${encodeURIComponent(dir)}`);
+			const response = await fetch(`/api/theme?dir=${encodeURIComponent(targetDir)}`);
 			const data = (await response.json()) as {
 				message?: string;
 				dir?: string;
@@ -211,18 +211,19 @@ export const useThemeStore = (): ThemeStore => {
 			setTypography(parseDesignMd(data.designMd).typography);
 			setThemeNameState(parseDesignMd(data.designMd).name);
 			setCurrentThemeName("");
-			setLocation({ kind: "directory", dir: data.dir ?? dir });
+			setLocation({ kind: "directory", dir: data.dir ?? targetDir });
+			setDirState(data.dir ?? targetDir);
 			setDirHasContract(true);
 			setDirty(false);
 			setStatus("saved");
-			setMessage(`Opened ${shortenPath(dir)}`);
+			setMessage(`Opened ${shortenPath(targetDir)}`);
 			return true;
 		} catch (error) {
 			setStatus("error");
 			setMessage(errorMessage(error));
 			return false;
 		}
-	}, [dir]);
+	}, []);
 
 	const writeTheme = useCallback(
 		async (targetDir: string): Promise<boolean> => {
@@ -288,9 +289,12 @@ export const useThemeStore = (): ThemeStore => {
 		[designMd, tokensCss, issues, refreshLocalThemes]
 	);
 
-	const loadFromDisk = useCallback(async () => {
-		if (await openFromDisk()) setLoadDialogOpen(false);
-	}, [openFromDisk]);
+	const loadFromDir = useCallback(
+		async (targetDir: string) => {
+			if (await openFromDisk(targetDir)) setLoadDialogOpen(false);
+		},
+		[openFromDisk]
+	);
 
 	const requestLoad = useCallback(() => {
 		refreshLocalThemes();
@@ -391,7 +395,7 @@ export const useThemeStore = (): ThemeStore => {
 		updateTypography,
 		reset,
 		requestLoad,
-		loadFromDisk,
+		loadFromDir,
 		requestSave,
 		requestExport,
 		saveAsLocal,

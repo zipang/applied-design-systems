@@ -68,12 +68,6 @@
 	flex-wrap: wrap;
 }
 
-.editor-toolbar__dir-group {
-	display: flex;
-	align-items: stretch;
-	gap: var(--space-xs);
-}
-
 .editor-toolbar__dir {
 	width: 22rem;
 	max-width: 40vw;
