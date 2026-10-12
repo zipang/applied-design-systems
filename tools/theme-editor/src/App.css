@@ -7,7 +7,7 @@
 /* The centered column shared by the toolbar row and the page body. */
 .app__container {
 	width: 100%;
-	max-width: 80rem;
+	max-width: 75rem;
 	margin-inline: auto;
 	padding-inline: var(--space-xxl) var(--space-lg);
 }

@@ -2,17 +2,16 @@
 	position: sticky;
 	top: 0;
 	z-index: 20;
-	display: flex;
-	align-items: center;
-	gap: var(--space-md);
-	flex-wrap: wrap;
-	padding-block: var(--space-sm);
-	padding-inline: var(--space-lg);
 	background: var(--color-surface-card);
 	border-bottom: var(--border-sm) solid var(--color-surface-alt);
+	padding-block: var(--space-sm);
 }
 
 .editor-toolbar__brand {
+	position: absolute;
+	inset-inline-start: var(--space-lg);
+	inset-block-start: 50%;
+	transform: translateY(-50%);
 	display: flex;
 	align-items: baseline;
 	gap: var(--space-sm);
@@ -26,16 +25,12 @@
 	color: var(--color-text);
 }
 
-/* The centered column: same max-width as the main sections, holding the theme name and
-   the actions. The tool mark sits to its left, in the header's full width. */
+/* The header shares the main column's `.app__container`, so the theme name lines up with
+   every section's content. The tool mark and the reference sit outside that container. */
 .editor-toolbar__center {
 	display: flex;
 	align-items: center;
 	gap: var(--space-md);
-	flex: 1;
-	width: 100%;
-	max-width: 80rem;
-	margin-inline: auto;
 }
 
 .editor-toolbar__spacer {
@@ -55,6 +50,15 @@
 		color: var(--color-text-muted);
 		font-weight: var(--font-weight-regular);
 	}
+}
+
+.editor-toolbar__aside {
+	position: absolute;
+	inset-inline-end: var(--space-lg);
+	inset-block-start: 50%;
+	transform: translateY(-50%);
+	display: flex;
+	align-items: center;
 }
 
 .editor-toolbar__actions {

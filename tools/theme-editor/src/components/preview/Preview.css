@@ -1,5 +1,5 @@
 .vz-section {
-	padding: var(--space-xxl) var(--space-lg);
+	padding: var(--space-xxl) 0;
 
 	&:first-child {
 		padding-top: var(--space-xl);

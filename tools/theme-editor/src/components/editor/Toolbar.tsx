@@ -38,7 +38,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 			<div className="editor-toolbar__brand">
 				<span className="editor-toolbar__mark">THEME EDITOR</span>
 			</div>
-			<div className="editor-toolbar__center">
+			<div className="app__container editor-toolbar__center">
 				<EditableText
 					value={store.themeName}
 					onChange={store.setThemeName}
@@ -75,9 +75,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 					/>
 					<Button label="Save" size="sm" variant="primary" onClick={() => store.requestSave()} />
 					<Button label="Export" size="sm" variant="ghost" onClick={store.exportFiles} />
-					<Button label="Reset" size="sm" variant="ghost" icon="reset" onClick={store.reset} />
-					<Button label="Reference" size="sm" variant="ghost" onClick={onShowReference} />
 				</div>
+			</div>
+			<div className="editor-toolbar__aside">
+				<Button label="Reference" size="sm" variant="ghost" onClick={onShowReference} />
 			</div>
 			{pickerOpen ? (
 				<FolderPicker
