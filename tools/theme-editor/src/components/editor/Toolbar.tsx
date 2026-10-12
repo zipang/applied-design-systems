@@ -74,7 +74,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onShowReference }) => {
 						onClick={() => store.requestLoad()}
 					/>
 					<Button label="Save" size="sm" variant="primary" onClick={() => store.requestSave()} />
-					<Button label="Export" size="sm" variant="ghost" onClick={store.exportFiles} />
+					<Button label="Export" size="sm" variant="ghost" onClick={store.requestExport} />
 				</div>
 			</div>
 			<div className="editor-toolbar__aside">

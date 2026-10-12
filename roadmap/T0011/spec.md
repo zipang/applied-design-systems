@@ -67,8 +67,11 @@ The current `ThemeLibrary` save dialog is replaced by a tabbed dialog:
 - **Favorites** — store the theme in the browser (localStorage) under the theme name. The
   name field is prefilled from the toolbar name.
 
-Toolbar Save behavior: with a directory already set, Save writes straight to disk (unchanged);
-with no directory, it opens this dialog.
+The theme's **location** is the directory or favorite it was last loaded from or saved to.
+Toolbar **Save** writes straight back to that location — no dialog, no confirmation. Only a
+theme with no location yet (the built-in default) opens this dialog. Loading from a directory
+or a favorite records that location too, so a following Save needs no confirmation. To write
+the theme somewhere else, use the toolbar **Export**, which always opens this dialog.
 
 ### The default theme is special on Save
 
@@ -176,8 +179,9 @@ export const serializeDesignMd = (
       the main column's `max-width`.
 - [x] `.app__container` centers the main content and the footer (`margin-inline: auto` +
       max-width); the toolbar's name + actions group uses the same `max-width`.
-- [x] The Save dialog has Directory and Favorites tabs; Save-without-directory opens it; the
-      built-in default warns before it is shadowed.
+- [x] The Save dialog has Directory and Favorites tabs; Save opens it only when the theme
+      has no location yet; **Export** opens it to adopt a new location; the built-in default
+      warns before it is shadowed.
 - [x] The Load dialog has Directory and Favorites tabs.
 - [x] The validator rejects a contract with no theme name; `validate.test.ts` covers it.
 - [x] `bun run check`, `bun run typecheck`, and `bun test` pass.

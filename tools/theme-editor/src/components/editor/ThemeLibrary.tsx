@@ -27,6 +27,7 @@ export const ThemeLibrary: React.FC = () => {
 		setDir,
 		saveAsLocal,
 		exportTo,
+		exportFiles,
 		closeSaveDialog
 	} = useAppState();
 	const [tab, setTab] = useState("directory");
@@ -89,7 +90,7 @@ export const ThemeLibrary: React.FC = () => {
 								onClick={() => setPickerOpen(true)}
 							/>
 							<Button
-								label="Export"
+								label="Save to directory"
 								size="sm"
 								variant="primary"
 								disabled={!dir}
@@ -140,6 +141,7 @@ export const ThemeLibrary: React.FC = () => {
 					</section>
 				)}
 				<div className="editor-theme-library__actions">
+					<Button label="Download files" size="sm" variant="ghost" onClick={exportFiles} />
 					<Button label="Close" size="sm" variant="ghost" onClick={closeSaveDialog} />
 				</div>
 			</DialogContent>

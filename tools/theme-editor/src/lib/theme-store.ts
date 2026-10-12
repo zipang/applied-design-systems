@@ -28,6 +28,9 @@ import { type Issue, validateContract } from "./validate";
 /** Async status of the theme store. */
 export type ThemeStatus = "idle" | "loading" | "saving" | "saved" | "error";
 
+/** Where the current theme is persisted: a project directory or a browser favorite. */
+export type ThemeLocation = { kind: "directory"; dir: string } | { kind: "favorite"; name: string };
+
 /** State and actions the theme editor uses to edit and persist a project's contract. */
 export interface ThemeStore {
 	values: TokenValues;
@@ -40,6 +43,7 @@ export interface ThemeStore {
 	typography: TypographyRefs;
 	currentThemeName: string;
 	themeName: string;
+	location: ThemeLocation | null;
 	localThemes: LocalThemeSummary[];
 	saveDialogOpen: boolean;
 	loadDialogOpen: boolean;
@@ -51,6 +55,7 @@ export interface ThemeStore {
 	requestLoad: () => void;
 	loadFromDisk: () => void;
 	requestSave: () => void;
+	requestExport: () => void;
 	saveAsLocal: (name: string) => void;
 	loadLocal: (name: string) => void;
 	removeLocal: (name: string) => void;
@@ -118,6 +123,10 @@ export const useThemeStore = (): ThemeStore => {
 	const [themeName, setThemeNameState] = useState(
 		() => parseDesignMd(readLastTheme()?.designMd ?? DEFAULT_DESIGN_MD).name
 	);
+	const [location, setLocation] = useState<ThemeLocation | null>(() => {
+		const name = readLastThemeName();
+		return name && readLocalTheme(name) ? { kind: "favorite", name } : null;
+	});
 	const [localThemes, setLocalThemes] = useState<LocalThemeSummary[]>(() => listLocalThemes());
 	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 	const [loadDialogOpen, setLoadDialogOpen] = useState(false);
@@ -174,6 +183,7 @@ export const useThemeStore = (): ThemeStore => {
 		setTypography(parseDesignMd(DEFAULT_DESIGN_MD).typography);
 		setThemeNameState(parseDesignMd(DEFAULT_DESIGN_MD).name);
 		setCurrentThemeName("");
+		setLocation(null);
 		writeLastThemeName("");
 		setDirty(true);
 		setStatus("idle");
@@ -188,6 +198,7 @@ export const useThemeStore = (): ThemeStore => {
 			const response = await fetch(`/api/theme?dir=${encodeURIComponent(dir)}`);
 			const data = (await response.json()) as {
 				message?: string;
+				dir?: string;
 				designMd?: string;
 				tokensCss?: string;
 			};
@@ -200,6 +211,7 @@ export const useThemeStore = (): ThemeStore => {
 			setTypography(parseDesignMd(data.designMd).typography);
 			setThemeNameState(parseDesignMd(data.designMd).name);
 			setCurrentThemeName("");
+			setLocation({ kind: "directory", dir: data.dir ?? dir });
 			setDirHasContract(true);
 			setDirty(false);
 			setStatus("saved");
@@ -232,6 +244,7 @@ export const useThemeStore = (): ThemeStore => {
 				// Writing adopts the target, so a later Save keeps using it.
 				setDirState(targetDir);
 				setDirHasContract(true);
+				setLocation({ kind: "directory", dir: targetDir });
 				setBaseDesignMd(designMd);
 				setDirty(false);
 				setStatus("saved");
@@ -246,11 +259,34 @@ export const useThemeStore = (): ThemeStore => {
 		[designMd, tokensCss, issues]
 	);
 
-	const saveToDisk = useCallback(() => {
-		void writeTheme(dir);
-	}, [writeTheme, dir]);
-
 	const exportTo = useCallback((targetDir: string) => writeTheme(targetDir), [writeTheme]);
+
+	const writeFavorite = useCallback(
+		(name: string): boolean => {
+			const trimmed = name.trim();
+			if (!trimmed) {
+				setStatus("error");
+				setMessage("Enter a theme name.");
+				return false;
+			}
+			if (issues.some((issue) => issue.level === "error")) {
+				setStatus("error");
+				setMessage("Fix the validation errors before saving.");
+				return false;
+			}
+			writeLocalTheme(trimmed, { designMd, tokensCss });
+			writeLastThemeName(trimmed);
+			setBaseDesignMd(designMd);
+			setCurrentThemeName(trimmed);
+			setLocation({ kind: "favorite", name: trimmed });
+			setDirty(false);
+			setStatus("saved");
+			setMessage(`Saved "${trimmed}" in this browser.`);
+			refreshLocalThemes();
+			return true;
+		},
+		[designMd, tokensCss, issues, refreshLocalThemes]
+	);
 
 	const loadFromDisk = useCallback(async () => {
 		if (await openFromDisk()) setLoadDialogOpen(false);
@@ -264,38 +300,29 @@ export const useThemeStore = (): ThemeStore => {
 	}, [refreshLocalThemes]);
 
 	const requestSave = useCallback(() => {
-		if (dir) {
-			void saveToDisk();
+		// A theme that already has a location saves straight back to it, no dialog.
+		if (location?.kind === "directory") {
+			void writeTheme(location.dir);
+			return;
+		}
+		if (location?.kind === "favorite") {
+			writeFavorite(location.name);
 			return;
 		}
 		refreshLocalThemes();
 		setSaveDialogOpen(true);
-	}, [dir, saveToDisk, refreshLocalThemes]);
+	}, [location, writeTheme, writeFavorite, refreshLocalThemes]);
+
+	const requestExport = useCallback(() => {
+		refreshLocalThemes();
+		setSaveDialogOpen(true);
+	}, [refreshLocalThemes]);
 
 	const saveAsLocal = useCallback(
 		(name: string) => {
-			const trimmed = name.trim();
-			if (!trimmed) {
-				setStatus("error");
-				setMessage("Enter a theme name.");
-				return;
-			}
-			if (issues.some((issue) => issue.level === "error")) {
-				setStatus("error");
-				setMessage("Fix the validation errors before saving.");
-				return;
-			}
-			writeLocalTheme(trimmed, { designMd, tokensCss });
-			writeLastThemeName(trimmed);
-			setBaseDesignMd(designMd);
-			setCurrentThemeName(trimmed);
-			setDirty(false);
-			setStatus("saved");
-			setMessage(`Saved "${trimmed}" in this browser.`);
-			refreshLocalThemes();
-			setSaveDialogOpen(false);
+			if (writeFavorite(name)) setSaveDialogOpen(false);
 		},
-		[designMd, tokensCss, issues, refreshLocalThemes]
+		[writeFavorite]
 	);
 
 	const loadLocal = useCallback((name: string) => {
@@ -313,6 +340,7 @@ export const useThemeStore = (): ThemeStore => {
 			setThemeNameState(parseDesignMd(theme.designMd).name);
 			writeLastThemeName(name);
 			setCurrentThemeName(name);
+			setLocation({ kind: "favorite", name });
 			setDirty(false);
 			setStatus("saved");
 			setMessage(`Loaded "${name}" from this browser.`);
@@ -330,10 +358,11 @@ export const useThemeStore = (): ThemeStore => {
 				setCurrentThemeName("");
 				writeLastThemeName("");
 			}
+			if (location?.kind === "favorite" && location.name === name) setLocation(null);
 			refreshLocalThemes();
 			setMessage(`Deleted "${name}".`);
 		},
-		[currentThemeName, refreshLocalThemes]
+		[currentThemeName, location, refreshLocalThemes]
 	);
 
 	const exportFiles = useCallback(() => {
@@ -352,6 +381,7 @@ export const useThemeStore = (): ThemeStore => {
 		typography,
 		currentThemeName,
 		themeName,
+		location,
 		localThemes,
 		saveDialogOpen,
 		loadDialogOpen,
@@ -363,6 +393,7 @@ export const useThemeStore = (): ThemeStore => {
 		requestLoad,
 		loadFromDisk,
 		requestSave,
+		requestExport,
 		saveAsLocal,
 		loadLocal,
 		removeLocal,
