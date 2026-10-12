@@ -5,7 +5,7 @@
 	justify-content: center;
 	overflow: hidden;
 	background: var(--color-brand-secondary);
-	color: var(--color-text-ondark);
+	color: var(--color-on-secondary);
 	font-family: var(--font-family-mono);
 
 	&.ui-avatar--rounded {

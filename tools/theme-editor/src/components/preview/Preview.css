@@ -206,19 +206,21 @@
 	font-size: var(--font-size-sm);
 	padding: 0 var(--space-xs);
 	border-radius: var(--rounded-sm);
-	color: var(--color-text-ondark);
 
 	&[data-level="AAA"],
 	&[data-level="AA"] {
 		background: var(--color-action-success);
+		color: var(--color-on-success);
 	}
 
 	&[data-level="AA Large"] {
 		background: var(--color-action-warning);
+		color: var(--color-on-warning);
 	}
 
 	&[data-level="Fail"] {
 		background: var(--color-action-danger);
+		color: var(--color-on-danger);
 	}
 }
 

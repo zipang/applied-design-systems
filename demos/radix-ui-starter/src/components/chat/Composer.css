@@ -46,6 +46,6 @@
 	& .chat-composer__send {
 		min-inline-size: 7rem;
 		background: var(--color-surface-dark);
-		color: var(--color-text-ondark);
+		color: var(--color-on-dark);
 	}
 }

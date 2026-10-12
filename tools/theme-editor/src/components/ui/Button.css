@@ -21,18 +21,17 @@
 	/* --- Variants --- */
 	&.ui-button--primary {
 		background: var(--color-brand-primary);
-		color: var(--color-text-ondark);
+		color: var(--color-on-primary);
 	}
 
-	/* Bright accent: use the theme's darkest ink for contrast. */
 	&.ui-button--accent {
 		background: var(--color-brand-accent);
-		color: var(--color-surface-dark);
+		color: var(--color-on-accent);
 	}
 
 	&.ui-button--secondary {
 		background: var(--color-surface-alt);
-		color: var(--color-text);
+		color: var(--color-on-alt);
 	}
 
 	&.ui-button--ghost {
@@ -42,22 +41,22 @@
 
 	&.ui-button--success {
 		background: var(--color-action-success);
-		color: var(--color-text-ondark);
+		color: var(--color-on-success);
 	}
 
 	&.ui-button--warning {
 		background: var(--color-action-warning);
-		color: var(--color-text-ondark);
+		color: var(--color-on-warning);
 	}
 
 	&.ui-button--danger {
 		background: var(--color-action-danger);
-		color: var(--color-text-ondark);
+		color: var(--color-on-danger);
 	}
 
 	&.ui-button--info {
 		background: var(--color-action-info);
-		color: var(--color-text-ondark);
+		color: var(--color-on-info);
 	}
 
 	/* --- Sizes — min-block-size keeps icon and text-only buttons equal height --- */

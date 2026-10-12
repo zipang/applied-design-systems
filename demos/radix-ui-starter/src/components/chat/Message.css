@@ -18,7 +18,7 @@
 
 	& .chat-message__bubble {
 		border-radius: var(--rounded-none) var(--rounded-lg) var(--rounded-lg) var(--rounded-lg);
-		color: var(--color-text);
+		color: var(--color-on-alt);
 
 		& p {
 			line-height: var(--line-height-relaxed);
@@ -27,7 +27,7 @@
 
 	&.is-you .chat-message__bubble {
 		border-radius: var(--rounded-lg) var(--rounded-none) var(--rounded-lg) var(--rounded-lg);
-		color: var(--color-text-ondark);
+		color: var(--color-on-dark);
 	}
 
 	& .chat-message__attachment {
