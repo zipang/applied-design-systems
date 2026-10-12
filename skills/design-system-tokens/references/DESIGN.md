@@ -147,19 +147,17 @@ for any text on a surface: the `primary`, `accent`, `success`, `warning`, `dange
 
 ### Color variants
 
-Brand and action colors carry `muted` and `active` variants derived
-automatically from the base color via CSS relative color syntax:
+This [color variants companion stylesheet](./color-variants.css) can be used to 
+gain `*-muted` and `*-active` color variants derived from the theme's brand and action colors:
 
+The calculation is made with:
 - `muted`  — `hsl(from <base> h calc(s * 0.8) calc(l * 1.2))` — less
   saturated, lighter; the softened, resting variant.
 - `active` — `hsl(from <base> h calc(s * 1.2) calc(l * 1.1))` — more
   saturated, lighter; the vivid hover/pressed variant.
 
-Only `brand` and `action` colors carry these variants, because they are used
-on interactive elements with states. Text and surface colors define their own
-variants explicitly in the token tables. These derived variants are **not
-design tokens** — do not list them in the front matter. They are generated in
-`color-variants.css`, included after the main design-tokens stylesheet.
+**Note:** Only `brand` and `action` colors carry these variants, because they are 
+intended to be used on interactive elements with _active/disabled_ states. 
 
 ## Typography
 
