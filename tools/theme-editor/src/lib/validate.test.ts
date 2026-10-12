@@ -42,6 +42,7 @@ describe("validateContract", () => {
 
 	test("flags a wrong optional fallback", () => {
 		const issues = validateContract({
+			tokensCss: contract.tokensCss,
 			designValues: {},
 			declaredPaths: new Set<string>(),
 			unknownPaths: [],
@@ -53,5 +54,38 @@ describe("validateContract", () => {
 	test("flags an undocumented front-matter path", () => {
 		const issues = validateContract({ ...contract, unknownPaths: ["colors.brand.hologram"] });
 		expect(issues.some((issue) => issue.code === "undocumented-path")).toBe(true);
+	});
+
+	test("flags a hosted web font with no stylesheet import", () => {
+		const issues = validateContract({
+			...contract,
+			tokensCss: contract.tokensCss.replace(/^\s*@import[^\n]*\n?/m, "")
+		});
+		expect(
+			issues.some(
+				(issue) => issue.code === "missing-font-import" && issue.target === "--font-family-base"
+			)
+		).toBe(true);
+	});
+
+	test("accepts hosted web fonts when the stylesheet imports them", () => {
+		expect(contract.tokensCss).toContain("@import");
+		expect(validateContract(contract).some((issue) => issue.code === "missing-font-import")).toBe(
+			false
+		);
+	});
+
+	test("accepts a system-only theme with no import", () => {
+		const issues = validateContract({
+			...contract,
+			tokensCss: ":root { --font-family-base: Georgia, serif; }",
+			cssValues: {
+				...contract.cssValues,
+				"--font-family-base": "Georgia, serif",
+				"--font-family-display": "Georgia, serif",
+				"--font-family-mono": "Courier New, monospace"
+			}
+		});
+		expect(issues.some((issue) => issue.code === "missing-font-import")).toBe(false);
 	});
 });

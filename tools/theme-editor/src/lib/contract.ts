@@ -6,6 +6,7 @@ import {
 	tokenByPath,
 	tokenByVariable
 } from "./design-system";
+import { fontStackFamilies, googleFontImport } from "./fonts";
 
 /** Fields of a typographic style that reference a token variable. */
 export type TypographyField = "fontWeight" | "lineHeight" | "letterSpacing";
@@ -81,6 +82,21 @@ export const resolveVariables = (value: string, values: TokenValues, depth = 0):
 	});
 	return next === value ? next : resolveVariables(next, values, depth + 1);
 };
+
+const FONT_FAMILY_TOKENS = TOKENS.filter((token) => token.kind === "font-family");
+const FONT_WEIGHT_TOKENS = TOKENS.filter((token) => token.kind === "font-weight");
+
+/** The theme's font families, resolved through `var()` aliases, for the font import. */
+const fontFamilies = (values: TokenValues): string[] =>
+	FONT_FAMILY_TOKENS.flatMap((token) =>
+		fontStackFamilies(resolveVariables(values[token.variable] ?? "", values))
+	);
+
+/** The numeric weights the theme uses, for the font import's `wght` axis. */
+const fontWeights = (values: TokenValues): number[] =>
+	FONT_WEIGHT_TOKENS.map((token) =>
+		Number.parseFloat(resolveVariables(values[token.variable] ?? "", values))
+	).filter((weight) => Number.isFinite(weight));
 
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
 
@@ -173,12 +189,14 @@ export const serializeDesignMd = (
 	return `---\n${yamlText}---\n${parsed.body}`;
 };
 
-const CSS_COMMENT = /\/\*[\s\S]*?\*\//g;
 const CSS_VARIABLE = /--([\w-]+)\s*:\s*([^;]+);/g;
+
+/** Remove CSS comments so parsers never read commented-out declarations or at-rules. */
+export const stripCssComments = (css: string): string => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 /** Parse every custom property from a stylesheet into a variable → value map. */
 export const parseTokensCss = (text: string): TokenValues => {
-	const clean = text.replace(CSS_COMMENT, "");
+	const clean = stripCssComments(text);
 	const values: TokenValues = {};
 	for (;;) {
 		const match = CSS_VARIABLE.exec(clean);
@@ -192,7 +210,11 @@ export const parseTokensCss = (text: string): TokenValues => {
 
 /** Serialize the full token set into one scoped block. Optional tokens keep their fallbacks. */
 export const serializeTokensCss = (values: TokenValues, selector = ":root"): string => {
-	const lines = [`${selector} {`];
+	// Web fonts must be imported before any rule or the font-family tokens fall back to
+	// the local stack; system-only themes produce no import.
+	const fontImport = googleFontImport(fontFamilies(values), fontWeights(values));
+	const lines = fontImport ? [fontImport, ""] : [];
+	lines.push(`${selector} {`);
 	let currentGroup = "";
 	for (const token of TOKENS) {
 		if (token.group !== currentGroup) {
@@ -212,6 +234,8 @@ export const scopeTokensCss = (css: string, scope: string): string => css.replac
 
 /** A contract is the two parsed files plus their merged view. */
 export interface Contract {
+	/** The raw `design-tokens.css` text, for checks that read at-rules the parser skips. */
+	tokensCss: string;
 	designValues: TokenValues;
 	cssValues: TokenValues;
 	declaredPaths: Set<string>;
@@ -224,6 +248,7 @@ export const parseContract = (designMd: string, tokensCss: string): Contract => 
 	const design = parseDesignMd(designMd);
 	const cssValues = parseTokensCss(tokensCss);
 	return {
+		tokensCss,
 		designValues: design.values,
 		cssValues,
 		declaredPaths: design.declaredPaths,

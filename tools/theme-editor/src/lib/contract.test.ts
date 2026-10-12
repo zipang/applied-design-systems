@@ -50,6 +50,27 @@ describe("contract parsing", () => {
 		expect(reparsed).toEqual(values);
 	});
 
+	test("serializeTokensCss imports the theme's Google fonts", async () => {
+		const values = parseTokensCss(await readTheme("design-tokens.css"));
+		const css = serializeTokensCss(values);
+		expect(css.startsWith('@import url("https://fonts.googleapis.com/css2?')).toBe(true);
+		expect(css).toContain("family=Plus+Jakarta+Sans");
+		expect(css).toContain("family=DM+Serif+Display");
+		expect(css).toContain("family=JetBrains+Mono");
+	});
+
+	test("serializeTokensCss omits the import for a system-only theme", async () => {
+		const values = {
+			...parseTokensCss(await readTheme("design-tokens.css")),
+			"--font-family-base": "Georgia, serif",
+			"--font-family-display": "Georgia, serif",
+			"--font-family-mono": "Courier New, monospace"
+		};
+		const css = serializeTokensCss(values);
+		expect(css.startsWith("@import")).toBe(false);
+		expect(css.startsWith(":root {")).toBe(true);
+	});
+
 	test("serializeDesignMd then parseDesignMd keeps declared values", async () => {
 		const designMd = await readTheme("DESIGN.md");
 		const contract = parseContract(designMd, await readTheme("design-tokens.css"));

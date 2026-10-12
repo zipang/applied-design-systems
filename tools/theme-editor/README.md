@@ -18,8 +18,10 @@ shadcn.
   tokens.
 - **Reads and writes the contract.** A Bun server reads and writes `DESIGN.md` and
   `design-tokens.css` under a project directory, validating against the section 10 rules
-  before it saves. The `…` button beside the directory field opens a server-backed
-  folder picker, so the path is chosen rather than typed.
+  before it saves. The generated stylesheet opens with a Google Fonts `@import` for the
+  families the theme uses, so the `--font-family-*` tokens resolve. The `…` button beside
+  the directory field opens a server-backed folder picker, so the path is chosen rather
+  than typed.
 - **Saves locally too.** Without a project directory, Save stores the theme in this
   browser under a name. Load offers both sources — the project directory on disk, or the
   saved themes in this browser — so you choose where the contract comes from. The active

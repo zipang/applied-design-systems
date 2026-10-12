@@ -197,3 +197,73 @@ export const loadGoogleFont = (family: string): void => {
 	link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;700&display=block`;
 	document.head.append(link);
 };
+
+/** Generic CSS font-family keywords that never name a loadable web font. */
+const GENERIC_FAMILIES = new Set([
+	"serif",
+	"sans-serif",
+	"monospace",
+	"cursive",
+	"fantasy",
+	"system-ui",
+	"ui-serif",
+	"ui-sans-serif",
+	"ui-monospace",
+	"ui-rounded",
+	"math",
+	"emoji",
+	"fangsong",
+	"-apple-system",
+	"blinkmacsystemfont"
+]);
+
+const googleFontNames = new Map(
+	GOOGLE_FONTS.map((font) => [font.family.toLowerCase(), font.family])
+);
+
+/**
+ * The families named in a CSS font stack, in order, with quotes and generic keywords
+ * removed. Unresolved `var()` fragments are dropped, so resolve the value first.
+ */
+export const fontStackFamilies = (stack: string): string[] =>
+	stack
+		.split(",")
+		.map((part) =>
+			part
+				.trim()
+				.replace(/^["']|["']$/g, "")
+				.trim()
+		)
+		.filter(
+			(family) =>
+				family.length > 0 && !family.includes("var(") && !GENERIC_FAMILIES.has(family.toLowerCase())
+		);
+
+/** The canonical Google Font name for `family`, or undefined when it is not in the catalog. */
+export const googleFontName = (family: string): string | undefined =>
+	googleFontNames.get(family.trim().toLowerCase());
+
+/**
+ * Build the Google Fonts `@import` for the catalog families among `families`, loading
+ * the given weights. Returns `""` when none is a Google Font, so system-only themes stay
+ * import-free. Google serves a family's available faces for any requested weight set, so
+ * a shared list is safe even for single-weight display faces.
+ */
+export const googleFontImport = (families: string[], weights: number[] = [400, 700]): string => {
+	const canonical = [
+		...new Set(
+			families
+				.map((family) => googleFontName(family))
+				.filter((family): family is string => family !== undefined)
+		)
+	];
+	if (canonical.length === 0) return "";
+	const axis = [...new Set(weights)]
+		.filter((weight) => Number.isInteger(weight) && weight >= 100 && weight <= 900)
+		.sort((a, b) => a - b);
+	const suffix = axis.length > 0 ? `:wght@${axis.join(";")}` : "";
+	const query = canonical
+		.map((family) => `family=${family.replace(/\s+/g, "+")}${suffix}`)
+		.join("&");
+	return `@import url("https://fonts.googleapis.com/css2?${query}&display=swap");`;
+};

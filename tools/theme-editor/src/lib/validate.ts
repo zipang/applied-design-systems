@@ -1,5 +1,6 @@
-import { normalizeValue, resolveVariables } from "./contract";
+import { normalizeValue, resolveVariables, stripCssComments } from "./contract";
 import { TOKENS, tokenByVariable } from "./design-system";
+import { fontStackFamilies, googleFontName } from "./fonts";
 
 /** One validation finding. */
 export interface Issue {
@@ -11,17 +12,30 @@ export interface Issue {
 
 /** The two parsed halves of the contract plus front-matter bookkeeping. */
 export interface ValidationInput {
+	/** The raw `design-tokens.css` text, for checks that read at-rules the parser skips. */
+	tokensCss: string;
 	designValues: Record<string, string>;
 	cssValues: Record<string, string>;
 	declaredPaths: Set<string>;
 	unknownPaths: string[];
 }
 
+const FONT_FAMILY_TOKENS = TOKENS.filter((token) => token.kind === "font-family");
+
+/** True when the stylesheet declares a font loader: an `@import` or a `@font-face` rule. */
+const hasFontImport = (tokensCss: string): boolean =>
+	/@(?:import|font-face)\b/i.test(stripCssComments(tokensCss));
+
+/** The hosted web fonts named by one font stack, from the families the catalog knows. */
+const hostedFontsIn = (stack: string): string[] =>
+	fontStackFamilies(stack).filter((family) => googleFontName(family) !== undefined);
+
 /**
  * Check a parsed contract against the section 10 rules of the design-system-tokens
  * skill. Returns one issue per violation; an empty array means the contract is valid.
  */
 export const validateContract = ({
+	tokensCss,
 	designValues,
 	cssValues,
 	declaredPaths,
@@ -104,6 +118,21 @@ export const validateContract = ({
 				message: `Optional ${token.variable} is neither declared in DESIGN.md nor set to its fallback ${token.fallback}.`
 			});
 		}
+	}
+
+	// Hosted web fonts must be imported by the stylesheet, or they never load.
+	const fontTokens = FONT_FAMILY_TOKENS.map((token) => ({
+		variable: token.variable,
+		hosted: hostedFontsIn(cssValues[token.variable] ?? "")
+	})).filter((entry) => entry.hosted.length > 0);
+	if (fontTokens.length > 0 && !hasFontImport(tokensCss)) {
+		const families = [...new Set(fontTokens.flatMap((entry) => entry.hosted))];
+		issues.push({
+			level: "error",
+			code: "missing-font-import",
+			target: fontTokens[0]?.variable,
+			message: `Hosted web fonts (${families.join(", ")}) need an @import or @font-face in design-tokens.css.`
+		});
 	}
 
 	return issues;
