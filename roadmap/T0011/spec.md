@@ -41,17 +41,21 @@ metadata: read, editable, and re-serialized.
 
 ### Toolbar shows and edits the name
 
-- The toolbar's left slot becomes the inline-editable theme name (reusing `EditableText`),
-  committing on blur/Enter. The generic `THEME EDITOR` mark is removed; the name is what
-  identifies the theme. An empty value falls back to a muted placeholder.
-- The status text (issues / unsaved / message) stays next to the name.
+- The `THEME EDITOR` mark stays at the start of `.editor-toolbar__brand`, at the toolbar's
+  left edge, and the toolbar keeps its full width.
+- The inline-editable theme name (reusing `EditableText`, committing on blur/Enter) and the
+  actions live in a centered group (`.editor-toolbar__center`, `max-width: 80rem`) with a
+  spacer between the name and the actions. An empty name falls back to a muted placeholder.
+- The save state becomes a small round `Pill` beside the name — green when saved, amber when
+  dirty, red on error — whose text label lives in `title`. `Pill` is a shared UI component;
+  the section navigation's dots use it too.
 
 ### Centered container
 
-- A single container class (e.g. `.app__container`) owns `width: 100%`,
-  `max-width: 80rem`, `margin-inline: auto`, and the current horizontal padding.
-- `.app__content` uses it; the toolbar wraps its row in the same container so the name's
-  left edge aligns with the content column. The footer aligns to the same container.
+- A shared `.app__container` (`width: 100%`, `max-width: 80rem`, `margin-inline: auto`, the
+  current horizontal padding) owns the main content column and the footer.
+- The toolbar is *not* wrapped wholesale: it spans the full header width, and only the
+  name + actions group is constrained to the same `max-width`.
 
 ### Save dialog: Directory | Favorites tabs
 
@@ -164,17 +168,19 @@ export const serializeDesignMd = (
 
 ## Success criteria
 
-- [ ] `parseDesignMd` exposes the front-matter `name`; `serializeDesignMd` writes it back
+- [x] `parseDesignMd` exposes the front-matter `name`; `serializeDesignMd` writes it back
       losslessly and drops it when empty.
-- [ ] The store carries `themeName`, seeded on init/load and reset to the default's name.
-- [ ] The toolbar shows the theme name inline-editable, left-aligned with `.app__content`.
-- [ ] `.app__content` and the toolbar inner row share one centered container
-      (`margin-inline: auto` + max-width).
-- [ ] The Save dialog has Directory and Favorites tabs; Save-without-directory opens it; the
+- [x] The store carries `themeName`, seeded on init/load and reset to the default's name.
+- [x] The toolbar keeps its full width with the `THEME EDITOR` mark at the left; the theme
+      name is inline-editable and sits with the save-state `Pill` in a group constrained to
+      the main column's `max-width`.
+- [x] `.app__container` centers the main content and the footer (`margin-inline: auto` +
+      max-width); the toolbar's name + actions group uses the same `max-width`.
+- [x] The Save dialog has Directory and Favorites tabs; Save-without-directory opens it; the
       built-in default warns before it is shadowed.
-- [ ] The Load dialog has Directory and Favorites tabs.
-- [ ] The validator rejects a contract with no theme name; `validate.test.ts` covers it.
-- [ ] `bun run check`, `bun run typecheck`, and `bun test` pass.
+- [x] The Load dialog has Directory and Favorites tabs.
+- [x] The validator rejects a contract with no theme name; `validate.test.ts` covers it.
+- [x] `bun run check`, `bun run typecheck`, and `bun test` pass.
 
 ## Open questions
 
