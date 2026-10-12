@@ -1,4 +1,7 @@
 /* CYAN — ported from applied-design-systems-eliza-chatbot-demo */
+
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+
 :root {
 	--font-family-base: "Space Mono", monospace;
 	--font-family-display: "Space Mono", monospace;
