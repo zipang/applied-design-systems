@@ -1,19 +1,18 @@
 import { Heading } from "@components/base/Heading";
 import { Text } from "@components/base/Text";
 import { Button } from "@components/ui/Button";
+import { useAppState } from "@lib/app-state";
 import { groupTokens } from "@lib/design-system";
-import type { Issue } from "@lib/validate";
 import type * as React from "react";
 import "./TokenReference.css";
 
 export interface TokenReferenceProps {
-	values: Record<string, string>;
-	issues: Issue[];
 	onClose: () => void;
 }
 
 /** Modal listing the fixed path ↔ CSS-variable mapping, current value, and status. */
-export const TokenReference: React.FC<TokenReferenceProps> = ({ values, issues, onClose }) => {
+export const TokenReference: React.FC<TokenReferenceProps> = ({ onClose }) => {
+	const { values, issues } = useAppState();
 	const errorTargets = new Set(issues.map((issue) => issue.target).filter(Boolean));
 
 	return (

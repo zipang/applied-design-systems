@@ -21,7 +21,7 @@ src/
   main.tsx           React entrypoint; injects the tool theme at runtime
   App.tsx            composes the toolbar, section nav, and scoped preview host
   components/        our UI library (see src/components/AGENTS.md)
-  lib/               pure contract logic (design-system, contract, validate, theme-api)
+  lib/               pure contract logic (design-system, contract, validate, theme-api, directories)
   styles/            shared, theme-agnostic stylesheets
 ```
 

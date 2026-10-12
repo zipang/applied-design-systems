@@ -31,6 +31,7 @@ export interface ThemeStore {
 	values: TokenValues;
 	issues: Issue[];
 	dir: string;
+	dirHasContract: boolean | null;
 	status: ThemeStatus;
 	message: string;
 	dirty: boolean;
@@ -39,11 +40,12 @@ export interface ThemeStore {
 	localThemes: LocalThemeSummary[];
 	saveDialogOpen: boolean;
 	loadDialogOpen: boolean;
-	setDir: (dir: string) => void;
+	setDir: (dir: string, hasContract?: boolean) => void;
 	update: (variable: string, value: string) => void;
 	updateTypography: (style: string, field: TypographyField, variable: string) => void;
 	reset: () => void;
-	requestOpen: () => void;
+	requestLoad: () => void;
+	loadFromDisk: () => void;
 	requestSave: () => void;
 	saveAsLocal: (name: string) => void;
 	loadLocal: (name: string) => void;
@@ -97,7 +99,8 @@ export const useThemeStore = (): ThemeStore => {
 		const theme = readLastTheme();
 		return parseDesignMd(theme?.designMd ?? DEFAULT_DESIGN_MD).typography;
 	});
-	const [dir, setDir] = useState("");
+	const [dir, setDirState] = useState("");
+	const [dirHasContract, setDirHasContract] = useState<boolean | null>(null);
 	const [status, setStatus] = useState<ThemeStatus>("idle");
 	const [message, setMessage] = useState("");
 	const [dirty, setDirty] = useState(false);
@@ -121,6 +124,13 @@ export const useThemeStore = (): ThemeStore => {
 	const refreshLocalThemes = useCallback(() => setLocalThemes(listLocalThemes()), []);
 	const closeSaveDialog = useCallback(() => setSaveDialogOpen(false), []);
 	const closeLoadDialog = useCallback(() => setLoadDialogOpen(false), []);
+
+	// The picker knows whether the chosen directory holds the contract; a typed path
+	// leaves that unknown until a load resolves it.
+	const setDir = useCallback((next: string, pickedHasContract?: boolean) => {
+		setDirState(next);
+		setDirHasContract(pickedHasContract ?? null);
+	}, []);
 
 	const update = useCallback((variable: string, value: string) => {
 		setValues((prev) => ({ ...prev, [variable]: value }));
@@ -167,6 +177,7 @@ export const useThemeStore = (): ThemeStore => {
 			setValues(mergeValues(contract));
 			setTypography(parseDesignMd(data.designMd).typography);
 			setCurrentThemeName("");
+			setDirHasContract(true);
 			setDirty(false);
 			setStatus("saved");
 			setMessage(`Opened ${dir}`);
@@ -204,11 +215,16 @@ export const useThemeStore = (): ThemeStore => {
 		}
 	}, [dir, designMd, tokensCss, issues]);
 
-	const requestOpen = useCallback(async () => {
-		if (dir && (await openFromDisk())) return;
+	const loadFromDisk = useCallback(async () => {
+		if (await openFromDisk()) setLoadDialogOpen(false);
+	}, [openFromDisk]);
+
+	const requestLoad = useCallback(() => {
 		refreshLocalThemes();
+		setStatus("idle");
+		setMessage("");
 		setLoadDialogOpen(true);
-	}, [dir, openFromDisk, refreshLocalThemes]);
+	}, [refreshLocalThemes]);
 
 	const requestSave = useCallback(() => {
 		if (dir) {
@@ -291,6 +307,7 @@ export const useThemeStore = (): ThemeStore => {
 		values,
 		issues,
 		dir,
+		dirHasContract,
 		status,
 		message,
 		dirty,
@@ -303,7 +320,8 @@ export const useThemeStore = (): ThemeStore => {
 		update,
 		updateTypography,
 		reset,
-		requestOpen,
+		requestLoad,
+		loadFromDisk,
 		requestSave,
 		saveAsLocal,
 		loadLocal,

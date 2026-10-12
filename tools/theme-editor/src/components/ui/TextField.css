@@ -44,4 +44,17 @@
 			opacity: 0.5;
 		}
 	}
+
+	/* A read-only field is still focusable so its text can be copied, but its value
+	   cannot change, so it must not advertise an editable focus ring. */
+	&.is-readonly {
+		& .ui-field__input {
+			cursor: default;
+
+			&:focus,
+			&:focus-visible {
+				outline: none;
+			}
+		}
+	}
 }

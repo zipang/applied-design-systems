@@ -1,4 +1,5 @@
 import { IssuesPanel } from "@components/editor/IssuesPanel";
+import { LoadThemeDialog } from "@components/editor/LoadThemeDialog";
 import { ThemeLibrary } from "@components/editor/ThemeLibrary";
 import { TokenReference } from "@components/editor/TokenReference";
 import { Toolbar } from "@components/editor/Toolbar";
@@ -9,9 +10,9 @@ import {
 	SpacingSection,
 	TypographySection
 } from "@components/preview/Preview";
+import { useAppState } from "@lib/app-state";
 import { previewStylesheet } from "@lib/apply-preview";
 import { clsx } from "@lib/clsx";
-import { useThemeStore } from "@lib/theme-store";
 import type * as React from "react";
 import { useEffect, useLayoutEffect, useState } from "react";
 import "./App.css";
@@ -27,12 +28,13 @@ const SECTIONS = [
 /**
  * The theme editor shell. Edits the Design System contract, previews it in a scoped
  * subtree (so the tool's chrome keeps its own tokens), and saves it through the API.
+ * The theme and host state live in {@link useAppState}; sections read them directly.
  */
 export const App: React.FC = () => {
-	const store = useThemeStore();
+	const { values, saveDialogOpen, loadDialogOpen } = useAppState();
 	const [active, setActive] = useState("typography");
 	const [showReference, setShowReference] = useState(false);
-	const previewCss = previewStylesheet(store.values);
+	const previewCss = previewStylesheet(values);
 
 	// The scoped preview stylesheet is injected into <head>, never rendered inline.
 	useLayoutEffect(() => {
@@ -68,7 +70,7 @@ export const App: React.FC = () => {
 
 	return (
 		<div className="app">
-			<Toolbar store={store} onShowReference={() => setShowReference(true)} />
+			<Toolbar onShowReference={() => setShowReference(true)} />
 			<nav className="app__nav" aria-label="Sections">
 				{SECTIONS.map((section) => (
 					<button
@@ -85,17 +87,12 @@ export const App: React.FC = () => {
 				))}
 			</nav>
 			<main className="app__content">
-				<IssuesPanel issues={store.issues} onShowReference={() => setShowReference(true)} />
-				<TypographySection
-					values={store.values}
-					update={store.update}
-					typography={store.typography}
-					updateTypography={store.updateTypography}
-				/>
-				<ColorsSection values={store.values} update={store.update} />
-				<SpacingSection values={store.values} update={store.update} />
-				<ShapesSection values={store.values} update={store.update} />
-				<ComponentsSection values={store.values} update={store.update} />
+				<IssuesPanel onShowReference={() => setShowReference(true)} />
+				<TypographySection />
+				<ColorsSection />
+				<SpacingSection />
+				<ShapesSection />
+				<ComponentsSection />
 			</main>
 			<footer className="app__footer">
 				<span>Click a swatch to edit · every value consumes a design token</span>
@@ -107,37 +104,9 @@ export const App: React.FC = () => {
 					Back to top
 				</button>
 			</footer>
-			{showReference ? (
-				<TokenReference
-					values={store.values}
-					issues={store.issues}
-					onClose={() => setShowReference(false)}
-				/>
-			) : null}
-			{store.saveDialogOpen ? (
-				<ThemeLibrary
-					mode="save"
-					themes={store.localThemes}
-					currentThemeName={store.currentThemeName}
-					defaultName={store.currentThemeName}
-					onSave={store.saveAsLocal}
-					onLoad={store.loadLocal}
-					onDelete={store.removeLocal}
-					onClose={store.closeSaveDialog}
-				/>
-			) : null}
-			{store.loadDialogOpen ? (
-				<ThemeLibrary
-					mode="load"
-					themes={store.localThemes}
-					currentThemeName={store.currentThemeName}
-					defaultName={store.currentThemeName}
-					onSave={store.saveAsLocal}
-					onLoad={store.loadLocal}
-					onDelete={store.removeLocal}
-					onClose={store.closeLoadDialog}
-				/>
-			) : null}
+			{showReference ? <TokenReference onClose={() => setShowReference(false)} /> : null}
+			{saveDialogOpen ? <ThemeLibrary /> : null}
+			{loadDialogOpen ? <LoadThemeDialog /> : null}
 		</div>
 	);
 };

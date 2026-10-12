@@ -1,3 +1,4 @@
+import { AppStateProvider } from "@lib/app-state";
 import { createRoot } from "react-dom/client";
 import DEFAULT_TOKENS_CSS from "../design-tokens.css" with { type: "text" };
 import DEFAULT_THEME_OVERRIDES from "../ui-theme-overrides.css" with { type: "text" };
@@ -15,5 +16,9 @@ document.head.prepend(themeElt);
 const rootElt = document.getElementById("root");
 
 if (rootElt) {
-	createRoot(rootElt).render(<App />);
+	createRoot(rootElt).render(
+		<AppStateProvider>
+			<App />
+		</AppStateProvider>
+	);
 }

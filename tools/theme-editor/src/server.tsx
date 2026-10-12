@@ -1,4 +1,6 @@
 import index from "../index.html";
+import { listDirectories } from "./lib/directories";
+import { readSystemInfo } from "./lib/system-info";
 import { readTheme, saveTheme, ThemeApiError } from "./lib/theme-api";
 
 const port = Number(process.env.PORT ?? 4444);
@@ -81,6 +83,21 @@ const server = Bun.serve({
 					return json({ ok: true, issues });
 				} catch (error) {
 					return errorResponse(error, "Save theme");
+				}
+			}
+		},
+		"/api/system": {
+			GET: () => json(readSystemInfo())
+		},
+		"/api/dirs": {
+			GET: async (request) => {
+				const path = new URL(request.url).searchParams.get("path") ?? undefined;
+				log("📁", `Listing directories in ${path ?? process.cwd()}`);
+				try {
+					const listing = await listDirectories(path);
+					return json(listing);
+				} catch (error) {
+					return errorResponse(error, `List directories in ${path ?? process.cwd()}`);
 				}
 			}
 		},

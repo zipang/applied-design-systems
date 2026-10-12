@@ -1,0 +1,69 @@
+.editor-load-theme {
+	inline-size: min(40rem, 90vw);
+
+	& .editor-load-theme__section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		padding-block-start: var(--space-sm);
+		border-block-start: var(--border-sm) solid var(--color-surface-alt);
+	}
+
+	& .editor-load-theme__dir {
+		color: var(--color-text-muted);
+		font-family: var(--font-family-mono);
+		font-size: var(--font-size-sm);
+		overflow-wrap: anywhere;
+	}
+
+	& .editor-load-theme__list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		max-block-size: 16rem;
+		margin: 0;
+		padding: 0;
+		overflow: auto;
+		list-style: none;
+	}
+
+	& .editor-load-theme__item {
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		align-items: center;
+		gap: var(--space-sm);
+		padding: var(--space-sm);
+		border: var(--border-sm) solid var(--color-surface-alt);
+		border-radius: var(--rounded-sm);
+	}
+
+	& .editor-load-theme__info {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+		min-inline-size: 0;
+	}
+
+	& .editor-load-theme__name {
+		color: var(--color-text);
+		font-family: var(--font-family-mono);
+		font-size: var(--font-size-sm);
+		overflow-wrap: anywhere;
+	}
+
+	& .editor-load-theme__meta {
+		color: var(--color-text-muted);
+		font-family: var(--font-family-mono);
+		font-size: var(--font-size-sm);
+	}
+
+	& .editor-load-theme__error {
+		color: var(--color-action-danger);
+	}
+
+	& .editor-load-theme__actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
+}

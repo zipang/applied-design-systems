@@ -7,25 +7,14 @@ import { SettingsCog } from "@components/editor/SettingsCog";
 import { Button } from "@components/ui/Button";
 import { Tabs } from "@components/ui/Tabs";
 import { TextField } from "@components/ui/TextField";
-import { resolveVariables, type TypographyField, type TypographyRefs } from "@lib/contract";
+import { useAppState } from "@lib/app-state";
+import { resolveVariables } from "@lib/contract";
 import { contrastLevel, contrastRatio, isLight } from "@lib/contrast";
 import { TOKENS, type TokenValues } from "@lib/design-system";
 import { formatRem } from "@lib/scale";
 import type * as React from "react";
 import { useState } from "react";
 import "./Preview.css";
-
-/** Props shared by every preview section. */
-export interface SectionProps {
-	values: TokenValues;
-	update: (variable: string, value: string) => void;
-}
-
-/** Typography additionally manages each style's token references. */
-export interface TypographySectionProps extends SectionProps {
-	typography: TypographyRefs;
-	updateTypography: (style: string, field: TypographyField, variable: string) => void;
-}
 
 const read = (values: TokenValues, variable: string): string => values[variable] ?? "";
 const px = (values: TokenValues, variable: string): number => {
@@ -163,12 +152,8 @@ interface TrackView {
 }
 
 /** Typography: Headings / Body / Mono tracks, one cog each, faithful to the reference. */
-export const TypographySection: React.FC<TypographySectionProps> = ({
-	values,
-	update,
-	typography,
-	updateTypography
-}) => {
+export const TypographySection: React.FC = () => {
+	const { values, update, typography, updateTypography } = useAppState();
 	const [track, setTrack] = useState<TrackKey>("heading");
 	const [configs, setConfigs] = useState<Record<TrackKey, TrackConfig>>(TRACK_DEFAULTS);
 	const [texts, setTexts] = useState<Record<TrackKey, string[]>>({
@@ -440,7 +425,8 @@ const Swatch: React.FC<{
 );
 
 /** Colors: Palette / Usage tabs. */
-export const ColorsSection: React.FC<SectionProps> = ({ values, update }) => {
+export const ColorsSection: React.FC = () => {
+	const { values, update } = useAppState();
 	const [tab, setTab] = useState("palette");
 
 	return (
@@ -513,7 +499,8 @@ const SPACE_STEPS = ["xs", "sm", "md", "base", "lg", "xl", "xxl"].map((name) => 
 }));
 
 /** Spacing: one scale cog, bars and a visual preview. */
-export const SpacingSection: React.FC<SectionProps> = ({ values, update }) => {
+export const SpacingSection: React.FC = () => {
+	const { values, update } = useAppState();
 	const [unit, setUnit] = useState(4);
 	const max = Math.max(...SPACE_STEPS.map((step) => px(values, step.variable)), 1);
 	const generate = (): void => {
@@ -617,7 +604,8 @@ const ELEVATION_PRESETS: Record<string, string[]> = {
 };
 
 /** Shapes: radius presets, border widths, and elevation presets. */
-export const ShapesSection: React.FC<SectionProps> = ({ values, update }) => {
+export const ShapesSection: React.FC = () => {
+	const { values, update } = useAppState();
 	const applyPreset = (name: string): void => {
 		const preset = ELEVATION_PRESETS[name];
 		if (!preset) return;
@@ -702,7 +690,8 @@ export const ShapesSection: React.FC<SectionProps> = ({ values, update }) => {
 /* ── Components ──────────────────────────────────────────────────────────── */
 
 /** Components: Buttons / Containers / Cards tabs. */
-export const ComponentsSection: React.FC<SectionProps> = ({ values }) => {
+export const ComponentsSection: React.FC = () => {
+	const { values } = useAppState();
 	const [tab, setTab] = useState("buttons");
 	const [field, setField] = useState("Design System");
 	const onDark = isLight(resolved(values, "--color-brand-primary"));

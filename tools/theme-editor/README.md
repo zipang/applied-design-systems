@@ -18,9 +18,11 @@ shadcn.
   tokens.
 - **Reads and writes the contract.** A Bun server reads and writes `DESIGN.md` and
   `design-tokens.css` under a project directory, validating against the section 10 rules
-  before it saves.
+  before it saves. The `…` button beside the directory field opens a server-backed
+  folder picker, so the path is chosen rather than typed.
 - **Saves locally too.** Without a project directory, Save stores the theme in this
-  browser under a name, and Open lists the saved themes so you can load one. The active
+  browser under a name. Load offers both sources — the project directory on disk, or the
+  saved themes in this browser — so you choose where the contract comes from. The active
   theme is restored on the next visit.
 - **Stays honest.** Every value consumes a token; the fixed list is the same one the
   skill documents.
@@ -34,8 +36,9 @@ Build:      bun run --cwd tools/theme-editor build
 Typecheck:  bun run --cwd tools/theme-editor typecheck
 ```
 
-The dev server also exposes the theme API: `GET /api/theme?dir=<project>` and
-`POST /api/theme`.
+The dev server also exposes the theme API: `GET /api/theme?dir=<project>`,
+`POST /api/theme`, `GET /api/dirs?path=<dir>` (the folder picker's directory listing),
+and `GET /api/system` (the host home and working directory).
 
 The server listens on `http://localhost:4444` by default. Set `PORT` to override it
 (for example `PORT=5555 bun run theme-editor:dev`).

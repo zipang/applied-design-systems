@@ -1,15 +1,15 @@
 import { Button } from "@components/ui/Button";
-import type { Issue } from "@lib/validate";
+import { useAppState } from "@lib/app-state";
 import type * as React from "react";
 import "./IssuesPanel.css";
 
 export interface IssuesPanelProps {
-	issues: Issue[];
 	onShowReference: () => void;
 }
 
 /** Banner that surfaces contract validation errors before an invalid save. */
-export const IssuesPanel: React.FC<IssuesPanelProps> = ({ issues, onShowReference }) => {
+export const IssuesPanel: React.FC<IssuesPanelProps> = ({ onShowReference }) => {
+	const { issues } = useAppState();
 	const errors = issues.filter((issue) => issue.level === "error");
 	if (errors.length === 0) return null;
 
