@@ -4,11 +4,12 @@
 	color: var(--color-text);
 }
 
-.app__content {
-	padding-left: var(--space-xxl);
-	padding-right: var(--space-lg);
+/* The centered column shared by the toolbar row and the page body. */
+.app__container {
+	width: 100%;
 	max-width: 80rem;
-	margin: 0 auto;
+	margin-inline: auto;
+	padding-inline: var(--space-xxl) var(--space-lg);
 }
 
 .app__nav {

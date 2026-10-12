@@ -2,14 +2,17 @@
 	position: sticky;
 	top: 0;
 	z-index: 20;
+	background: var(--color-surface-card);
+	border-bottom: var(--border-sm) solid var(--color-surface-alt);
+	padding-block: var(--space-sm);
+}
+
+.editor-toolbar__inner {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--space-md);
 	flex-wrap: wrap;
-	padding: var(--space-sm) var(--space-lg);
-	background: var(--color-surface-card);
-	border-bottom: var(--border-sm) solid var(--color-surface-alt);
 }
 
 .editor-toolbar__brand {
@@ -18,12 +21,18 @@
 	gap: var(--space-sm);
 }
 
-.editor-toolbar__mark {
+.editor-toolbar__name {
 	font-family: var(--font-family-mono);
 	font-size: var(--font-size-sm);
 	font-weight: var(--font-weight-bold);
 	letter-spacing: var(--letter-spacing-wide);
 	color: var(--color-text);
+
+	&:empty::before {
+		content: "Untitled theme";
+		color: var(--color-text-muted);
+		font-weight: var(--font-weight-regular);
+	}
 }
 
 .editor-toolbar__status {

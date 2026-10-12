@@ -86,7 +86,7 @@ export const App: React.FC = () => {
 					</button>
 				))}
 			</nav>
-			<main className="app__content">
+			<main className="app__container">
 				<IssuesPanel onShowReference={() => setShowReference(true)} />
 				<TypographySection />
 				<ColorsSection />
