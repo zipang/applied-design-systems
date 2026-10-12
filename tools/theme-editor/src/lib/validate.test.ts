@@ -46,9 +46,20 @@ describe("validateContract", () => {
 			designValues: {},
 			declaredPaths: new Set<string>(),
 			unknownPaths: [],
+			name: contract.name,
 			cssValues: { ...contract.cssValues, "--color-surface-card": "#123456" }
 		});
 		expect(issues.some((issue) => issue.code === "optional-fallback")).toBe(true);
+	});
+
+	test("flags an unnamed contract", () => {
+		const issues = validateContract({ ...contract, name: "" });
+		expect(issues.some((issue) => issue.code === "theme-name")).toBe(true);
+	});
+
+	test("accepts a named contract", () => {
+		expect(contract.name).not.toBe("");
+		expect(validateContract(contract).some((issue) => issue.code === "theme-name")).toBe(false);
 	});
 
 	test("flags an undocumented front-matter path", () => {

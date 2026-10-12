@@ -39,10 +39,12 @@ export interface ThemeStore {
 	dirty: boolean;
 	typography: TypographyRefs;
 	currentThemeName: string;
+	themeName: string;
 	localThemes: LocalThemeSummary[];
 	saveDialogOpen: boolean;
 	loadDialogOpen: boolean;
 	setDir: (dir: string, hasContract?: boolean) => void;
+	setThemeName: (name: string) => void;
 	update: (variable: string, value: string) => void;
 	updateTypography: (style: string, field: TypographyField, variable: string) => void;
 	reset: () => void;
@@ -109,14 +111,17 @@ export const useThemeStore = (): ThemeStore => {
 	const [currentThemeName, setCurrentThemeName] = useState(() =>
 		readLastTheme() ? (readLastThemeName() ?? "") : ""
 	);
+	const [themeName, setThemeNameState] = useState(
+		() => parseDesignMd(readLastTheme()?.designMd ?? DEFAULT_DESIGN_MD).name
+	);
 	const [localThemes, setLocalThemes] = useState<LocalThemeSummary[]>(() => listLocalThemes());
 	const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 	const [loadDialogOpen, setLoadDialogOpen] = useState(false);
 
 	const tokensCss = useMemo(() => serializeTokensCss(values), [values]);
 	const designMd = useMemo(
-		() => serializeDesignMd(values, baseDesignMd, typography),
-		[values, baseDesignMd, typography]
+		() => serializeDesignMd(values, baseDesignMd, typography, themeName),
+		[values, baseDesignMd, typography, themeName]
 	);
 	const issues = useMemo(
 		() => validateContract(parseContract(designMd, tokensCss)),
@@ -153,10 +158,17 @@ export const useThemeStore = (): ThemeStore => {
 		[]
 	);
 
+	const setThemeName = useCallback((name: string) => {
+		setThemeNameState(name);
+		setDirty(true);
+		setStatus("idle");
+	}, []);
+
 	const reset = useCallback(() => {
 		setBaseDesignMd(DEFAULT_DESIGN_MD);
 		setValues(updateThemeContrastTokens(initialValues));
 		setTypography(parseDesignMd(DEFAULT_DESIGN_MD).typography);
+		setThemeNameState(parseDesignMd(DEFAULT_DESIGN_MD).name);
 		setCurrentThemeName("");
 		writeLastThemeName("");
 		setDirty(true);
@@ -182,6 +194,7 @@ export const useThemeStore = (): ThemeStore => {
 			setBaseDesignMd(data.designMd);
 			setValues(updateThemeContrastTokens(mergeValues(contract)));
 			setTypography(parseDesignMd(data.designMd).typography);
+			setThemeNameState(parseDesignMd(data.designMd).name);
 			setCurrentThemeName("");
 			setDirHasContract(true);
 			setDirty(false);
@@ -279,6 +292,7 @@ export const useThemeStore = (): ThemeStore => {
 			setBaseDesignMd(theme.designMd);
 			setValues(updateThemeContrastTokens(mergeValues(contract)));
 			setTypography(parseDesignMd(theme.designMd).typography);
+			setThemeNameState(parseDesignMd(theme.designMd).name);
 			writeLastThemeName(name);
 			setCurrentThemeName(name);
 			setDirty(false);
@@ -319,10 +333,12 @@ export const useThemeStore = (): ThemeStore => {
 		dirty,
 		typography,
 		currentThemeName,
+		themeName,
 		localThemes,
 		saveDialogOpen,
 		loadDialogOpen,
 		setDir,
+		setThemeName,
 		update,
 		updateTypography,
 		reset,

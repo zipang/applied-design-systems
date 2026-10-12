@@ -27,6 +27,31 @@ describe("contract parsing", () => {
 		expect(contract.designValues["--color-brand-accent"]).toBe("#2d2dff");
 	});
 
+	test("reads the front-matter name", async () => {
+		const designMd = await readTheme("DESIGN.md");
+		expect(parseDesignMd(designMd).name).toBe("Theme Editor Default");
+		expect(parseContract(designMd, "").name).toBe("Theme Editor Default");
+	});
+
+	test("renames the theme and drops an emptied name", () => {
+		const designMd = "---\nname: Old Name\n---\nbody\n";
+		const renamed = parseDesignMd(serializeDesignMd({}, designMd, undefined, "New Name"));
+		expect(renamed.name).toBe("New Name");
+
+		const cleared = parseDesignMd(serializeDesignMd({}, designMd, undefined, ""));
+		expect(cleared.name).toBe("");
+		expect(cleared.frontMatter.name).toBeUndefined();
+	});
+
+	test("omitting the name leaves it untouched", () => {
+		const designMd = "---\nname: Keep Me\n---\n";
+		expect(parseDesignMd(serializeDesignMd({}, designMd)).name).toBe("Keep Me");
+	});
+
+	test("an unnamed contract parses to an empty name", () => {
+		expect(parseDesignMd("---\nversion: alpha\n---\n").name).toBe("");
+	});
+
 	test("parses and writes typography style references", () => {
 		const designMd =
 			'---\ntypography:\n  base:\n    fontWeight: "var(--font-weight-regular)"\n    lineHeight: "var(--line-height-regular)"\n  display:\n    fontWeight: "var(--font-weight-bold)"\n---\n';

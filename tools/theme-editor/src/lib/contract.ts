@@ -24,6 +24,8 @@ export interface ParsedDesignMd {
 	unknownPaths: string[];
 	/** Style → field → token variable, for `typography.<style>.{fontWeight,lineHeight,letterSpacing}`. */
 	typography: TypographyRefs;
+	/** The theme's display name from the front matter, or `""` when absent. */
+	name: string;
 	/** The original parsed front-matter object, for lossless re-serialization. */
 	frontMatter: Record<string, unknown>;
 	/** The markdown body after the front matter. */
@@ -117,6 +119,10 @@ const collectTypography = (flat: Record<string, string>): TypographyRefs => {
 	return refs;
 };
 
+/** Read the front-matter `name`, trimmed; a non-string or empty value yields `""`. */
+const readName = (frontMatter: Record<string, unknown>): string =>
+	typeof frontMatter.name === "string" ? frontMatter.name.trim() : "";
+
 /** Parse a `DESIGN.md` file into token values and preserved metadata. */
 export const parseDesignMd = (text: string): ParsedDesignMd => {
 	const match = FRONT_MATTER.exec(text);
@@ -146,6 +152,7 @@ export const parseDesignMd = (text: string): ParsedDesignMd => {
 		declaredPaths,
 		unknownPaths,
 		typography: collectTypography(flat),
+		name: readName(frontMatter),
 		frontMatter,
 		body: match[2] ?? ""
 	};
@@ -154,15 +161,22 @@ export const parseDesignMd = (text: string): ParsedDesignMd => {
 /**
  * Rebuild the `DESIGN.md` front matter from token values, preserving metadata and prose.
  * Optional tokens that still equal their documented fallback are omitted, per the contract.
- * The `typography` map writes each style's token references back as `var(...)`.
+ * The `typography` map writes each style's token references back as `var(...)`. A `name`
+ * argument rewrites the theme name; `undefined` leaves the original name untouched.
  */
 export const serializeDesignMd = (
 	values: TokenValues,
 	original: string,
-	typography?: TypographyRefs
+	typography?: TypographyRefs,
+	name?: string
 ): string => {
 	const parsed = parseDesignMd(original);
 	const frontMatter = structuredClone(parsed.frontMatter);
+	if (name !== undefined) {
+		const trimmed = name.trim();
+		if (trimmed) frontMatter.name = trimmed;
+		else delete frontMatter.name;
+	}
 
 	for (const token of TOKENS) {
 		if (!token.path) continue;
@@ -241,6 +255,8 @@ export interface Contract {
 	declaredPaths: Set<string>;
 	unknownPaths: string[];
 	body: string;
+	/** The theme's front-matter name, or `""`. */
+	name: string;
 }
 
 /** Parse both halves of the contract. CSS values win for keys absent from the front matter. */
@@ -253,7 +269,8 @@ export const parseContract = (designMd: string, tokensCss: string): Contract => 
 		cssValues,
 		declaredPaths: design.declaredPaths,
 		unknownPaths: design.unknownPaths,
-		body: design.body
+		body: design.body,
+		name: design.name
 	};
 };
 

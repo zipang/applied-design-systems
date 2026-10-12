@@ -20,6 +20,8 @@ export interface ValidationInput {
 	cssValues: Record<string, string>;
 	declaredPaths: Set<string>;
 	unknownPaths: string[];
+	/** The theme's front-matter name. */
+	name: string;
 }
 
 const FONT_FAMILY_TOKENS = TOKENS.filter((token) => token.kind === "font-family");
@@ -41,9 +43,19 @@ export const validateContract = ({
 	designValues,
 	cssValues,
 	declaredPaths,
-	unknownPaths
+	unknownPaths,
+	name
 }: ValidationInput): Issue[] => {
 	const issues: Issue[] = [];
+
+	// A theme's name is its identity across the editor and its saved files.
+	if (name.trim() === "") {
+		issues.push({
+			level: "error",
+			code: "theme-name",
+			message: "DESIGN.md must declare a non-empty name."
+		});
+	}
 
 	// Undocumented tokens are forbidden in the stylesheet.
 	for (const variable of Object.keys(cssValues)) {
