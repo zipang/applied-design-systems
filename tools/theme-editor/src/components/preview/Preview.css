@@ -139,7 +139,7 @@
 
 .vz-sample__body {
 	min-width: 0;
-	overflow: hidden;
+	overflow-wrap: break-word;
 	color: var(--color-text);
 }
 

@@ -242,8 +242,7 @@ export const TypographySection: React.FC = () => {
 		fontSize: `${size / 16}rem`,
 		lineHeight: `var(${lineHeightVariable})`,
 		fontWeight: `var(${weightVariable})`,
-		...(letterSpacingVariable ? { letterSpacing: `var(${letterSpacingVariable})` } : {}),
-		...(track === "heading" ? { whiteSpace: "nowrap" as const } : {})
+		...(letterSpacingVariable ? { letterSpacing: `var(${letterSpacingVariable})` } : {})
 	});
 
 	return (

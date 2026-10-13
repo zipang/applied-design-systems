@@ -1,7 +1,7 @@
 .ui-editable {
 	cursor: text;
-	border-radius: var(--rounded-sm);
-	padding: 0 var(--space-xs);
+	border-radius: var(--rounded-none);
+	padding: var(--space-xs);
 	margin: 0 calc(var(--space-xs) * -1);
 	transition: background 0.12s ease;
 
