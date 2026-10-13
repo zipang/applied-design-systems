@@ -12,7 +12,14 @@ import { clsx } from "@lib/clsx";
 import { resolveVariables } from "@lib/contract";
 import { contrastLevel, contrastRatio } from "@lib/contrast";
 import { TOKENS, type TokenValues } from "@lib/design-system";
-import { formatRem } from "@lib/scale";
+import {
+	formatRem,
+	geometricSpacingScaleRem,
+	linearSpacingScaleRem,
+	SPACE_MULTIPLIER_DEFAULT,
+	SPACE_SEED_DEFAULT,
+	SPACE_UNIT_DEFAULT
+} from "@lib/scale";
 import type * as React from "react";
 import { useState } from "react";
 import "./Preview.css";
@@ -98,9 +105,30 @@ const MetaRow: React.FC<{
 	</div>
 );
 
+/**
+ * One tab panel, carrying the shared preview scope. Every panel of a tabbed section stays
+ * mounted: `.vz-panels` stacks them in one grid cell, so the group is always as tall as
+ * the tallest tab and switching tabs never reflows the page below it.
+ */
+const TabPanel: React.FC<{ active: boolean; children: React.ReactNode }> = ({
+	active,
+	children
+}) => (
+	<div className={clsx("vz-preview", "vz-panel", { "is-active": active })} data-ds-preview>
+		{children}
+	</div>
+);
+
 /* ── Typography ──────────────────────────────────────────────────────────── */
 
 type TrackKey = "heading" | "body" | "mono";
+
+/** The three type tracks, in tab order. Drives both the tab bar and the panels. */
+const TRACKS: { key: TrackKey; label: string }[] = [
+	{ key: "heading", label: "Headings" },
+	{ key: "body", label: "Body" },
+	{ key: "mono", label: "Mono" }
+];
 
 interface TrackConfig {
 	base: number;
@@ -171,7 +199,6 @@ export const TypographySection: React.FC = () => {
 	const [picking, setPicking] = useState(false);
 
 	const config = configs[track];
-	const sizes = stepSizes(config.base, config.ratio, config.steps);
 
 	const setConfig = (patch: Partial<TrackConfig>): void => {
 		const next = { ...config, ...patch };
@@ -185,11 +212,11 @@ export const TypographySection: React.FC = () => {
 		}
 	};
 
-	const setText = (index: number, value: string): void =>
+	const setText = (key: TrackKey, index: number, value: string): void =>
 		setTexts((prev) => {
-			const list = [...prev[track]];
+			const list = [...prev[key]];
 			list[index] = value;
-			return { ...prev, [track]: list };
+			return { ...prev, [key]: list };
 		});
 
 	const views: Record<TrackKey, TrackView> = {
@@ -232,31 +259,52 @@ export const TypographySection: React.FC = () => {
 	const family = read(values, view.familyVariable) || view.defaultFamily;
 	const weightVariable = typography[view.styleKey]?.fontWeight ?? DEFAULT_WEIGHT[view.key];
 	const lineHeightVariable = typography[view.styleKey]?.lineHeight ?? DEFAULT_LINE_HEIGHT[view.key];
-	const letterSpacingVariable =
-		typography[view.styleKey]?.letterSpacing ?? DEFAULT_LETTER_SPACING[view.key];
 	const weightName = tokenName(weightVariable, "--font-weight-");
 	const lineHeightName = tokenName(lineHeightVariable, "--line-height-");
 
-	const textStyle = (size: number): React.CSSProperties => ({
-		fontFamily: `var(${view.familyVariable})`,
-		fontSize: `${size / 16}rem`,
-		lineHeight: `var(${lineHeightVariable})`,
-		fontWeight: `var(${weightVariable})`,
-		...(letterSpacingVariable ? { letterSpacing: `var(${letterSpacingVariable})` } : {})
-	});
+	/**
+	 * The sample list for one track. Every panel renders its own track, so the sizes and
+	 * styles come from that track's config and its own weight, line height, and letter
+	 * spacing — never from whichever track the cog is currently editing.
+	 */
+	const trackSamples = (key: TrackKey): React.ReactNode => {
+		const stepView = views[key];
+		const stepConfig = configs[key];
+		const stepWeight = typography[stepView.styleKey]?.fontWeight ?? DEFAULT_WEIGHT[key];
+		const stepLineHeight = typography[stepView.styleKey]?.lineHeight ?? DEFAULT_LINE_HEIGHT[key];
+		const stepLetterSpacing =
+			typography[stepView.styleKey]?.letterSpacing ?? DEFAULT_LETTER_SPACING[key];
+		const stepSizesList = stepSizes(stepConfig.base, stepConfig.ratio, stepConfig.steps);
+
+		return stepSizesList.map((size, index) => (
+			<div className="vz-sample" key={`${key}-${stepView.labels[index] ?? index}`}>
+				<div className="vz-sample__meta">
+					<div>{stepView.labels[index] ?? `step-${index}`}</div>
+					<div>{`${(size / 16).toFixed(3)}rem`}</div>
+				</div>
+				<div
+					className="vz-sample__body"
+					style={{
+						fontFamily: `var(${stepView.familyVariable})`,
+						fontSize: `${size / 16}rem`,
+						lineHeight: `var(${stepLineHeight})`,
+						fontWeight: `var(${stepWeight})`,
+						...(stepLetterSpacing ? { letterSpacing: `var(${stepLetterSpacing})` } : {})
+					}}
+				>
+					<EditableText
+						value={texts[key][index] ?? "Sample text"}
+						onChange={(value) => setText(key, index, value)}
+					/>
+				</div>
+			</div>
+		));
+	};
 
 	return (
 		<section id="typography" className="vz-section">
 			<SectionHeader index="01" title="Typography" />
-			<Tabs
-				tabs={[
-					{ key: "heading", label: "Headings" },
-					{ key: "body", label: "Body" },
-					{ key: "mono", label: "Mono" }
-				]}
-				active={track}
-				onChange={(key) => setTrack(key as TrackKey)}
-			/>
+			<Tabs tabs={TRACKS} active={track} onChange={(key) => setTrack(key as TrackKey)} />
 			<MetaRow
 				cogLabel={view.cogLabel}
 				summary={
@@ -304,7 +352,7 @@ export const TypographySection: React.FC = () => {
 					value={config.ratio}
 					min={1.05}
 					max={2}
-					step={0.001}
+					step={0.05}
 					onChange={(value) => setConfig({ ratio: value })}
 				/>
 				<NumberField
@@ -336,20 +384,11 @@ export const TypographySection: React.FC = () => {
 				/>
 			</MetaRow>
 
-			<div className="vz-preview" data-ds-preview>
-				{sizes.map((size, index) => (
-					<div className="vz-sample" key={`${view.key}-${view.labels[index] ?? index}`}>
-						<div className="vz-sample__meta">
-							<div>{view.labels[index] ?? `step-${index}`}</div>
-							<div>{`${(size / 16).toFixed(3)}rem`}</div>
-						</div>
-						<div className="vz-sample__body" style={textStyle(size)}>
-							<EditableText
-								value={view.texts[index] ?? "Sample text"}
-								onChange={(value) => setText(index, value)}
-							/>
-						</div>
-					</div>
+			<div className="vz-panels">
+				{TRACKS.map(({ key }) => (
+					<TabPanel active={key === track} key={key}>
+						{trackSamples(key)}
+					</TabPanel>
 				))}
 			</div>
 
@@ -446,8 +485,8 @@ export const ColorsSection: React.FC = () => {
 				active={tab}
 				onChange={setTab}
 			/>
-			{tab === "palette" ? (
-				<div className="vz-preview" data-ds-preview>
+			<div className="vz-panels">
+				<TabPanel active={tab === "palette"}>
 					{COLOR_GROUPS.map((group) => (
 						<div className="vz-palette__group" key={group.label}>
 							<span className="vz-label">{group.label}</span>
@@ -464,9 +503,8 @@ export const ColorsSection: React.FC = () => {
 							</div>
 						</div>
 					))}
-				</div>
-			) : (
-				<div className="vz-preview" data-ds-preview>
+				</TabPanel>
+				<TabPanel active={tab === "usage"}>
 					<div className="vz-surfaces">
 						{SURFACES.map((surface) => {
 							const bg = resolved(values, surface.variable);
@@ -491,8 +529,8 @@ export const ColorsSection: React.FC = () => {
 							);
 						})}
 					</div>
-				</div>
-			)}
+				</TabPanel>
+			</div>
 		</section>
 	);
 };
@@ -504,22 +542,27 @@ const SPACE_STEPS = ["xs", "sm", "md", "base", "lg", "xl", "xxl"].map((name) => 
 	label: name
 }));
 
-/** Spacing: one scale cog, bars and a visual preview. */
+type SpaceMode = "linear" | "geometric";
+
+/** The two ways the spacing scale can be generated. */
+const SPACE_MODE_TABS = [
+	{ key: "linear", label: "Linear" },
+	{ key: "geometric", label: "Geometric" }
+];
+
+/** Spacing: one scale cog, a gap ramp, and a square per size token. */
 export const SpacingSection: React.FC = () => {
 	const { values, update } = useAppState();
-	const [unit, setUnit] = useState(4);
-	const max = Math.max(...SPACE_STEPS.map((step) => px(values, step.variable)), 1);
+	const [mode, setMode] = useState<SpaceMode>("linear");
+	const [unit, setUnit] = useState(SPACE_UNIT_DEFAULT);
+	const [seed, setSeed] = useState(SPACE_SEED_DEFAULT);
+	const [multiplier, setMultiplier] = useState(SPACE_MULTIPLIER_DEFAULT);
+
 	const generate = (): void => {
-		for (const [name, step] of Object.entries({
-			xs: 1,
-			sm: 2,
-			md: 3,
-			base: 4,
-			lg: 5,
-			xl: 8,
-			xxl: 12
-		})) {
-			update(`--space-${name}`, formatRem(unit * step));
+		const scale =
+			mode === "linear" ? linearSpacingScaleRem(unit) : geometricSpacingScaleRem(seed, multiplier);
+		for (const [name, value] of Object.entries(scale)) {
+			update(`--space-${name}`, value);
 		}
 	};
 
@@ -530,37 +573,36 @@ export const SpacingSection: React.FC = () => {
 				cogLabel="Spacing Scale"
 				summary={<span>{SPACE_STEPS.map((step) => read(values, step.variable)).join(" · ")}</span>}
 			>
-				<NumberField label="Linear unit (px)" value={unit} min={1} max={16} onChange={setUnit} />
+				<Tabs tabs={SPACE_MODE_TABS} active={mode} onChange={(key) => setMode(key as SpaceMode)} />
+				{mode === "linear" ? (
+					<NumberField label="Unit (rem)" value={unit} min={0} step={0.0625} onChange={setUnit} />
+				) : (
+					<div className="vz-field-pair">
+						<NumberField label="Seed (rem)" value={seed} min={0} step={0.0625} onChange={setSeed} />
+						<NumberField
+							label="Multiplier"
+							value={multiplier}
+							min={1.05}
+							max={2}
+							step={0.05}
+							onChange={setMultiplier}
+						/>
+					</div>
+				)}
 				<Button label="Generate scale" size="sm" variant="secondary" onClick={generate} />
 				{SPACE_STEPS.map((step) => (
 					<NumberField
 						key={step.variable}
 						label={step.label}
-						suffix="px"
-						value={Math.round(px(values, step.variable) * 1000) / 1000}
-						onChange={(value) => update(step.variable, formatRem(value))}
+						suffix="rem"
+						min={0}
+						step={0.0625}
+						value={rem(values, step.variable)}
+						onChange={(value) => update(step.variable, formatRem(value * 16))}
 					/>
 				))}
 			</MetaRow>
 			<div className="vz-preview" data-ds-preview>
-				<div className="vz-spacing">
-					{SPACE_STEPS.map((step) => (
-						<div className="vz-space-row" key={step.variable}>
-							<span className="vz-space-row__name">{step.label}</span>
-							<span className="vz-space-row__value">{read(values, step.variable)}</span>
-							<div className="vz-space-row__track">
-								<div
-									className="vz-space-row__bar"
-									style={{
-										width: `${Math.max(2, (px(values, step.variable) / max) * 100)}%`,
-										background: "var(--color-brand-accent)"
-									}}
-								/>
-							</div>
-							<code className="vz-code">{step.variable}</code>
-						</div>
-					))}
-				</div>
 				<div className="vz-space-preview">
 					{SPACE_STEPS.map((step) => (
 						<div
@@ -568,12 +610,22 @@ export const SpacingSection: React.FC = () => {
 							className="vz-space-square"
 							title={step.label}
 							style={{
-								width: `calc(var(${step.variable}) * 6)`,
-								height: `calc(var(${step.variable}) * 6)`,
-								background: "var(--color-brand-primary)"
+								width: `var(${step.variable})`,
+								height: `var(${step.variable})`
 							}}
 						/>
 					))}
+				</div>
+				<div className="vz-space-ramp">
+					{SPACE_STEPS.map((step) => (
+						<div
+							className="vz-space-ramp__box"
+							key={step.variable}
+							style={{ marginInlineEnd: `var(${step.variable})` }}
+						/>
+					))}
+					{/* The closing box: seven steps make seven gaps between eight boxes. */}
+					<div className="vz-space-ramp__box" />
 				</div>
 			</div>
 		</section>
@@ -727,8 +779,8 @@ export const ShapesSection: React.FC = () => {
 					</>
 				)}
 			</MetaRow>
-			<div className="vz-preview" data-ds-preview>
-				{tab === "radius" ? (
+			<div className="vz-panels">
+				<TabPanel active={tab === "radius"}>
 					<div className="vz-rounded">
 						{ROUNDED_STEPS.map((step) => (
 							<div className="vz-rounded__item" key={step.variable}>
@@ -741,7 +793,8 @@ export const ShapesSection: React.FC = () => {
 							</div>
 						))}
 					</div>
-				) : tab === "border" ? (
+				</TabPanel>
+				<TabPanel active={tab === "border"}>
 					<div className="vz-borders">
 						{BORDER_STEPS.map((step) => (
 							<div className="vz-border" key={step.variable}>
@@ -754,7 +807,8 @@ export const ShapesSection: React.FC = () => {
 							</div>
 						))}
 					</div>
-				) : (
+				</TabPanel>
+				<TabPanel active={tab === "elevation"}>
 					<div className="vz-elevations">
 						{ELEVATION_STEPS.map((step) => (
 							<div className="vz-elevation" key={step.variable}>
@@ -766,7 +820,7 @@ export const ShapesSection: React.FC = () => {
 							</div>
 						))}
 					</div>
-				)}
+				</TabPanel>
 			</div>
 		</section>
 	);
@@ -791,35 +845,33 @@ export const ComponentsSection: React.FC = () => {
 				active={tab}
 				onChange={setTab}
 			/>
-			<div className="vz-preview" data-ds-preview>
-				{tab === "buttons" ? (
-					<>
-						<span className="vz-label">Variants</span>
-						<div className="vz-row">
-							<Button label="Primary" variant="primary" />
-							<Button label="Accent" variant="accent" />
-							<Button label="Secondary" variant="secondary" />
-							<Button label="Ghost" variant="ghost" />
-							<Button label="Success" variant="success" />
-							<Button label="Warning" variant="warning" />
-							<Button label="Danger" variant="danger" />
-							<Button label="Info" variant="info" />
-						</div>
-						<span className="vz-label">Sizes</span>
-						<div className="vz-row">
-							<Button label="Small" size="sm" />
-							<Button label="Default" />
-							<Button label="Large" size="lg" />
-						</div>
-						<span className="vz-label">States</span>
-						<div className="vz-row">
-							<Button label="Default" />
-							<Button label="Loading" loading />
-							<Button label="Disabled" disabled />
-						</div>
-					</>
-				) : null}
-				{tab === "containers" ? (
+			<div className="vz-panels">
+				<TabPanel active={tab === "buttons"}>
+					<span className="vz-label">Variants</span>
+					<div className="vz-row">
+						<Button label="Primary" variant="primary" />
+						<Button label="Accent" variant="accent" />
+						<Button label="Secondary" variant="secondary" />
+						<Button label="Ghost" variant="ghost" />
+						<Button label="Success" variant="success" />
+						<Button label="Warning" variant="warning" />
+						<Button label="Danger" variant="danger" />
+						<Button label="Info" variant="info" />
+					</div>
+					<span className="vz-label">Sizes</span>
+					<div className="vz-row">
+						<Button label="Small" size="sm" />
+						<Button label="Default" />
+						<Button label="Large" size="lg" />
+					</div>
+					<span className="vz-label">States</span>
+					<div className="vz-row">
+						<Button label="Default" />
+						<Button label="Loading" loading />
+						<Button label="Disabled" disabled />
+					</div>
+				</TabPanel>
+				<TabPanel active={tab === "containers"}>
 					<div className="vz-containers">
 						<div className="vz-container">
 							<Heading level={3} size="md">
@@ -839,8 +891,8 @@ export const ComponentsSection: React.FC = () => {
 							<Button label="Save" variant="primary" />
 						</div>
 					</div>
-				) : null}
-				{tab === "cards" ? (
+				</TabPanel>
+				<TabPanel active={tab === "cards"}>
 					<div className="vz-cards">
 						<div className="vz-card">
 							<span className="vz-label">Article</span>
@@ -868,7 +920,7 @@ export const ComponentsSection: React.FC = () => {
 							</Text>
 						</div>
 					</div>
-				) : null}
+				</TabPanel>
 			</div>
 		</section>
 	);

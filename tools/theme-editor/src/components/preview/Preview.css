@@ -71,6 +71,28 @@
 	padding: var(--space-lg) 0;
 }
 
+/*
+ * Tab panels. Every panel of a tabbed section shares the first grid cell, so the group is
+ * as tall as the tallest panel and switching tabs never reflows the page below it. The
+ * inactive panels keep their layout — that is what holds the height — but
+ * `visibility: hidden` drops them from the tab order and the accessibility tree.
+ * `align-content: start` keeps a panel's own rows at their natural height, so the
+ * reserved space sits below the content instead of stretching it.
+ */
+.vz-panels {
+	display: grid;
+}
+
+.vz-panel {
+	grid-area: 1 / 1;
+	align-content: start;
+	visibility: hidden;
+
+	&.is-active {
+		visibility: visible;
+	}
+}
+
 .vz-row {
 	display: flex;
 	flex-wrap: wrap;
@@ -151,7 +173,7 @@
 
 .vz-swatches {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
 	gap: var(--space-md);
 }
 
@@ -229,38 +251,19 @@
 }
 
 /* Spacing */
-.vz-spacing {
-	display: grid;
-	gap: var(--space-xs);
-}
-
-.vz-space-row {
-	display: grid;
-	grid-template-columns: 3.5rem 4.5rem minmax(0, 1fr) 7rem;
-	gap: var(--space-sm);
+/*
+ * The gap ramp: one row of boxes the size of the `xxl` step, each carrying the next
+ * step as its trailing margin, so the seven gaps read left to right from `xs` to `xxl`.
+ */
+.vz-space-ramp {
+	display: flex;
 	align-items: center;
-	font-family: var(--font-family-mono);
-	font-size: var(--font-size-sm);
 }
 
-.vz-space-row__name {
-	color: var(--color-text-muted);
-}
-
-.vz-space-row__value {
-	color: var(--color-text);
-}
-
-.vz-space-row__track {
-	height: var(--space-sm);
-	background: var(--color-surface-alt);
-	border-radius: var(--rounded-full);
-	overflow: hidden;
-}
-
-.vz-space-row__bar {
-	height: 100%;
-	border-radius: var(--rounded-full);
+.vz-space-ramp__box {
+	inline-size: var(--space-xxl);
+	block-size: var(--space-xxl);
+	background: var(--color-surface-dark);
 }
 
 .vz-space-preview {
@@ -274,11 +277,12 @@
 }
 
 .vz-space-square {
-	border-radius: var(--rounded-sm);
 	flex: none;
+	background: var(--color-surface-dark);
+	border-radius: var(--rounded-sm);
 }
 
-/* Shapes — every sample shares the card surface, so only the shape property reads. */
+/* Shapes — one sample size and surface for every tab, so only the shape property reads. */
 .vz-rounded,
 .vz-borders,
 .vz-elevations {
@@ -297,13 +301,9 @@
 .vz-rounded__tile,
 .vz-border__sample,
 .vz-elevation__card {
+	width: calc(var(--space-xxl) * 2);
+	height: calc(var(--space-xxl) * 2);
 	background: var(--color-surface-card);
-}
-
-.vz-rounded__tile,
-.vz-border__sample {
-	width: 4.5rem;
-	height: 4.5rem;
 }
 
 .vz-rounded__tile {
@@ -323,9 +323,7 @@
 }
 
 .vz-elevation__card {
-	width: 5.5rem;
-	height: 5.5rem;
-	border: var(--border-sm) solid var(--color-surface-alt);
+	border: var(--border-md) solid var(--color-text);
 	border-radius: var(--rounded-md);
 }
 
@@ -333,6 +331,13 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-xs);
+}
+
+/* Cog-content helper: two parameter fields that belong on one line. */
+.vz-field-pair {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-sm);
 }
 
 /* Components */

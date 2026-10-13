@@ -3,6 +3,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	padding: 0 var(--space-base);
 	gap: var(--space-sm);
 	border: 0;
 	border-radius: var(--rounded-none);
@@ -62,19 +63,17 @@
 	/* --- Sizes — min-block-size keeps icon and text-only buttons equal height --- */
 	&.ui-button--sm {
 		min-block-size: calc(var(--space-lg) + var(--space-sm));
-		padding: var(--space-xs) var(--space-md);
 		font-size: var(--font-size-sm);
 	}
 
 	&.ui-button--default {
-		min-block-size: calc(var(--space-xl) + var(--space-base));
-		padding: var(--space-xs) var(--space-lg);
+		min-block-size: calc(var(--space-lg) + var(--space-base));
 		font-size: var(--font-size-md);
 	}
 
 	&.ui-button--lg {
-		min-block-size: calc(var(--space-xl) + var(--space-base) + var(--space-sm));
-		padding: var(--space-sm) var(--space-xl);
+		min-block-size: calc(var(--space-lg) + var(--space-base) + var(--space-sm));
+		padding: 0 var(--space-lg);
 		font-size: var(--font-size-lg);
 	}
 
