@@ -10,7 +10,7 @@ import { TextField } from "@components/ui/TextField";
 import { useAppState } from "@lib/app-state";
 import { clsx } from "@lib/clsx";
 import { resolveVariables } from "@lib/contract";
-import { contrastLevel, contrastRatio, isLight } from "@lib/contrast";
+import { contrastLevel, contrastRatio } from "@lib/contrast";
 import { TOKENS, type TokenValues } from "@lib/design-system";
 import { formatRem } from "@lib/scale";
 import type * as React from "react";
@@ -776,10 +776,8 @@ export const ShapesSection: React.FC = () => {
 
 /** Components: Buttons / Containers / Cards tabs. */
 export const ComponentsSection: React.FC = () => {
-	const { values } = useAppState();
 	const [tab, setTab] = useState("buttons");
 	const [field, setField] = useState("Design System");
-	const onDark = isLight(resolved(values, "--color-brand-primary"));
 
 	return (
 		<section id="components" className="vz-section">
@@ -849,35 +847,23 @@ export const ComponentsSection: React.FC = () => {
 							<Heading level={3} size="md">
 								The grid as structure
 							</Heading>
-							<Text size="sm" tone="muted">
+							<Text size="sm">
 								Invisible scaffolding that organizes every element into a coherent whole.
 							</Text>
 						</div>
-						<div
-							className="vz-card vz-card--dark"
-							style={{ background: "var(--color-brand-primary)" }}
-						>
-							<span
-								className="vz-label"
-								style={{ color: onDark ? "var(--color-text)" : "var(--color-text-ondark)" }}
-							>
-								Design tokens
-							</span>
+						<div className="vz-card vz-card--alt">
+							<span className="vz-label">Design tokens</span>
 							<Heading level={3} size="xl" className="vz-stat">
 								26
 							</Heading>
-							<Text size="sm" tone={onDark ? "muted" : "ondark"}>
-								variables in the contract
-							</Text>
+							<Text size="sm">variables in the contract</Text>
 						</div>
-						<div className="vz-card" style={{ background: "var(--color-surface-alt)" }}>
-							<span className="vz-label" style={{ color: "var(--color-text-muted)" }}>
-								Spacing · Color · Type
-							</span>
+						<div className="vz-card vz-card--dark">
+							<span className="vz-label">Spacing · Color · Type</span>
 							<Heading level={3} size="md">
 								Everything in its right place
 							</Heading>
-							<Text size="sm" tone="muted">
+							<Text size="sm">
 								A systematic approach keeps every decision intentional and every token purposeful.
 							</Text>
 						</div>

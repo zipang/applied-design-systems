@@ -356,7 +356,12 @@
 	gap: var(--space-md);
 }
 
+/*
+ * Cards — each one demonstrates a surface token paired with its `--color-on-*`
+ * foreground, so the card's text never falls back to the base text color.
+ */
 .vz-card {
+	--vz-card-fg: var(--color-on-card);
 	display: grid;
 	gap: var(--space-xs);
 	align-content: start;
@@ -365,6 +370,22 @@
 	border: var(--border-sm) solid var(--color-surface-alt);
 	border-radius: var(--rounded-lg);
 	box-shadow: var(--elevation-md);
+
+	&.vz-card--alt {
+		--vz-card-fg: var(--color-on-alt);
+		background: var(--color-surface-alt);
+	}
+
+	&.vz-card--dark {
+		--vz-card-fg: var(--color-on-dark);
+		background: var(--color-surface-dark);
+	}
+
+	& .vz-label,
+	& .base-text,
+	& .base-heading {
+		color: var(--vz-card-fg);
+	}
 }
 
 .vz-stat {
