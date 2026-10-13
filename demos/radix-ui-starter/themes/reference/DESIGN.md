@@ -60,14 +60,14 @@ typography:
 
 # ============================================================================
 # ROUNDED  —  corner radius presets (all five are required)
-# Values in rem, except full (9999px for circular shapes).
+# Values in rem, except full (100% for circular shapes).
 # ============================================================================
 rounded:
   none: "0"
   sm:   "0.25rem"
   md:   "0.75rem"
   lg:   "1.125rem"
-  full: "9999px"   # circular — avatars, icons, pills
+  full: "100%"   # circular — avatars, icons, pills
 
 # ============================================================================
 # SPACING  —  spatial rhythm scale, 4px linear (all required)
@@ -181,7 +181,7 @@ Depth is conveyed through color contrast and spacing rather than shadows.
 
 ## Shapes
 
-Corner radii range from 4px (0.25rem — chips, inputs) to 9999px (circular
+Corner radii range from 4px (0.25rem — chips, inputs) to 100% (circular
 avatars). Cards and thumbnails use 0.75rem. Pill buttons and large chips use
 1.125rem.
 

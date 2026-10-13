@@ -46,7 +46,7 @@ rounded:
   sm:   "0.25rem"
   md:   "0.75rem"
   lg:   "1.25rem"
-  full: "9999px"
+  full: "100%"
 
 spacing:
   xs:   "0.25rem"

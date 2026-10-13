@@ -60,7 +60,7 @@ rounded:
   sm:   "0.25rem"
   md:   "0.75rem"
   lg:   "1.125rem"
-  full: "9999px"
+  full: "100%"
 
 # ============================================================================
 # SPACING  —  spatial rhythm scale, 4px linear (all required)

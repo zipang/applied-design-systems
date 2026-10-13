@@ -140,13 +140,13 @@
 	/* ============================================================================
        4. ROUNDED — corner radii
        ----------------------------------------------------------------------------
-       4px chips, 12px cards, 18px pill buttons, 9999px circular avatars.
+       4px chips, 12px cards, 18px pill buttons, 100% circular avatars.
        ========================================================================== */
 	--rounded-none: 0; /*  0px — none                          */
 	--rounded-sm: 0.25rem; /*  4px — chips, small badges           */
 	--rounded-md: 0.75rem; /* 12px — cards, thumbnails, search bar */
 	--rounded-lg: 1.125rem; /* 18px — pill buttons, large chips     */
-	--rounded-full: 9999px; /* circular — avatars, circular icons   */
+	--rounded-full: 100%; /* circular — avatars, circular icons   */
 
 	/* ============================================================================
        5. ELEVATION — Flat (depth comes from contrast and spacing)

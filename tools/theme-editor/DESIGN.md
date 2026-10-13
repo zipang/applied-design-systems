@@ -59,7 +59,7 @@ rounded:
   sm:   "0.25rem"
   md:   "0.5rem"
   lg:   "0.75rem"
-  full: "9999px"
+  full: "100%"
 
 # ============================================================================
 # SPACING — 4px linear scale, base is always 1rem
@@ -149,7 +149,7 @@ hierarchy.
 
 ## Shapes
 
-Corner radii run from `none` (`0`) to `full` (`9999px`). Inputs and small
+Corner radii run from `none` (`0`) to `full` (`100%`). Inputs and small
 badges use `sm`; cards and buttons use `md`; large panels use `lg`.
 
 ## Components

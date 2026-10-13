@@ -63,7 +63,7 @@
 	--rounded-sm: 0.25rem;
 	--rounded-md: 0.75rem;
 	--rounded-lg: 1.25rem;
-	--rounded-full: 9999px;
+	--rounded-full: 100%;
 	--elevation-sm: none;
 	--elevation-md: none;
 	--elevation-lg: none;

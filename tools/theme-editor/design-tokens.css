@@ -28,12 +28,12 @@
 	/* --- Font weights --- */
 	--font-weight-thin: 400;
 	--font-weight-regular: 500;
-	--font-weight-bold: 700;
-	--font-weight-extrabold: var(--font-weight-bold);
+	--font-weight-bold: 500;
+	--font-weight-extrabold: 700;
 
 	/* --- Line heights --- */
-	--line-height-tight: 1.12;
-	--line-height-regular: 1.65;
+	--line-height-tight: 1.03;
+	--line-height-regular: 1.5;
 	--line-height-relaxed: 1.75;
 
 	/* --- Letter spacing --- */
@@ -92,7 +92,7 @@
 	--rounded-sm: 0.25rem;
 	--rounded-md: 0.5rem;
 	--rounded-lg: 0.75rem;
-	--rounded-full: 9999px;
+	--rounded-full: 100%;
 
 	/* --- Elevation --- */
 	--elevation-sm: 0 1px 4px 0 rgb(0 0 0 / 6%);
