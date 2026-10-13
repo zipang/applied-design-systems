@@ -31,7 +31,7 @@ Run only what the change can affect:
 |---|---|
 | Docs only (`*.md`, comments) | Use the `technical-writing` skill and check the project's glossary for proposed updates |
 | Config/tooling | Only the tools the config affects |
-| Source code | Full gates: `bun test`, `bunx tsc --noEmit`, `bun run check` |
+| Source code | Full gates: `bun test`, `bun --check`, `bun run check` |
 
 Never re-run a command that passed on unchanged files.
 

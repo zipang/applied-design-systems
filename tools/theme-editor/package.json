@@ -7,7 +7,7 @@
 		"dev": "bun --hot src/server.tsx",
 		"build": "bun build index.html --outdir dist",
 		"start": "bun src/server.tsx",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "bun --check"
 	},
 	"dependencies": {
 		"@radix-ui/react-dialog": "^1.1.23",
