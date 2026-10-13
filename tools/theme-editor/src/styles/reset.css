@@ -91,7 +91,6 @@ button {
    token. Each component may define its own ring in DESIGN.md. */
 :focus-visible {
 	outline: none;
-	box-shadow: 0 0 0 var(--border-md) var(--color-brand-primary);
 	border-radius: var(--rounded-none);
 }
 ::selection {
