@@ -14,6 +14,7 @@ import { Pill } from "@components/ui/Pill";
 import { useAppState } from "@lib/app-state";
 import { previewStylesheet } from "@lib/apply-preview";
 import { clsx } from "@lib/clsx";
+import { useActiveSection } from "@lib/scroll/useActiveSection";
 import type * as React from "react";
 import { useEffect, useLayoutEffect, useState } from "react";
 import "./App.css";
@@ -26,6 +27,9 @@ const SECTIONS = [
 	{ id: "components", label: "Components" }
 ];
 
+/** Stable id list, so the active-section listener is not re-subscribed on every render. */
+const SECTION_IDS = SECTIONS.map((section) => section.id);
+
 /**
  * The theme editor shell. Edits the Design System contract, previews it in a scoped
  * subtree (so the tool's chrome keeps its own tokens), and saves it through the API.
@@ -33,9 +37,9 @@ const SECTIONS = [
  */
 export const App: React.FC = () => {
 	const { values, saveDialogOpen, loadDialogOpen } = useAppState();
-	const [active, setActive] = useState("typography");
 	const [showReference, setShowReference] = useState(false);
 	const previewCss = previewStylesheet(values);
+	const active = useActiveSection(SECTION_IDS);
 
 	// The scoped preview stylesheet is injected into <head>, never rendered inline.
 	useLayoutEffect(() => {
@@ -51,23 +55,6 @@ export const App: React.FC = () => {
 		const elt = document.querySelector<HTMLStyleElement>("style[data-ds-preview-style]");
 		if (elt) elt.textContent = previewCss;
 	}, [previewCss]);
-
-	useEffect(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				const visible = entries
-					.filter((entry) => entry.isIntersecting)
-					.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-				if (visible[0]) setActive(visible[0].target.id);
-			},
-			{ threshold: 0.2 }
-		);
-		for (const section of SECTIONS) {
-			const elt = document.getElementById(section.id);
-			if (elt) observer.observe(elt);
-		}
-		return () => observer.disconnect();
-	}, []);
 
 	return (
 		<div className="app">
