@@ -13,7 +13,7 @@
 	}
 
 	& .ui-field__input {
-		border: var(--border-sm) solid var(--color-brand-secondary);
+		border: var(--border-sm) solid var(--color-text);
 		border-radius: var(--rounded-none);
 		background: var(--color-surface);
 		padding: var(--space-sm) var(--space-md);
