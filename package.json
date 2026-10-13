@@ -1,5 +1,5 @@
 {
-	"name": "design-systems-applied",
+	"name": "applied-design-systems",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.15",
-		"@types/bun": "^1.4.2",
+		"@types/bun": "^1.4.3",
 		"react-refresh": "^0.19.0",
 		"typescript": "^7.0.2",
 		"yaml": "^2.9.1"

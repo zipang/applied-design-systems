@@ -58,12 +58,13 @@ is the source of truth. Do not restate it here.
 
 ## How to use it
 
-1. Copy `skills/design-system-tokens/` into the `.agents/skills/` directory of your
-   project. opencode discovers the skill there.
-2. Ask the agent to create `DESIGN.md` and `design-tokens.css` at the project root. The
+1. Copy the full directory `skills/design-system-tokens/` 
+   inside the `.agents/skills/` directory of your project. 
+   Reload your session so that the agent discovers the skill there.
+2. Ask the agent to create the `DESIGN.md` and `design-tokens.css` files in a documented the project location. The
    agent picks values from the fixed list and does not invent tokens.
 3. Copy `references/color-variants.css` and `references/reset.css` into your project if
-   you want the derived color variants and the base styles.
+   you want the derived color variants and the base style reset.
 
 ## Repository layout
 

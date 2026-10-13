@@ -38,23 +38,17 @@ there; never duplicate token content into the proxy.
 - **Never commit secrets.** Keep credentials out of the repo and out of `.tmp/`.
 - Keep the working tree focused: stage only the files a change concerns.
 
-## Design System invariants
+## Use the Applied Design System
 
-- The token list is **fixed**. Do not add undocumented tokens.
-- To change a value, edit it in **both** `DESIGN.md` front matter and
+- `DESIGN.md` front matter is the source of truth for token values; the `design-token.css` stylesheet 
+  is the executable half of the contract.
+- To change a token value, edit it in **both** `DESIGN.md` front matter and
   `design-tokens.css`, and keep them identical.
-- `DESIGN.md` front matter is the source of truth for token values; the stylesheet is
-  the executable half of the contract.
+- The token list is **fixed**. Do not add undocumented tokens.
 - Follow the token tables in `skills/design-system-tokens/SKILL.md` and its validation
   rules (section 10) for every edit.
 - Components consume tokens with `var()`; never write raw colors, sizes, or radii in
   component CSS.
-
-## Skills
-
-Load a skill when the task matches its description. The skills live in
-`.agents/skills/`. The review skills are `follow-the-rules` (conformance to these
-rules), `refactor` (maintainability), and `typescript-best-practices` (typing).
 
 ## Workflow
 

@@ -1,23 +1,42 @@
 # Radix UI Starter
 
-A themeable chat demo that shows how to apply the Design Systems Applied token
-contract on top of Radix UI. Radix UI is a good choice for this purpose because its
-components come with no styles. We wrap them and style them with design tokens only.
+A themeable chat demo that applies the **Applied Design Systems** token contract on top of
+Radix UI. Radix UI primitives have no styles. The demo wraps each primitive and styles
+it with design tokens only. This is a reference, not a mockup. Copy its patterns.
 
-Status: under construction (Ticket T0002). See `roadmap/T0002/spec.md` and
-`roadmap/T0002/plan.md`.
+## Structure
 
-## Component library
+```
+radix-ui-starter/
+├── index.html               HTML entrypoint, loads src/main.tsx
+├── package.json             standalone package with its own dependencies
+├── tsconfig.json            standalone config; declares the import aliases
+├── themes/<name>/           one complete Design System per theme
+│   ├── DESIGN.md              the token values and the component rules
+│   └── design-tokens.css      the same tokens as CSS variables
+└── src/
+    ├── server.tsx           Bun dev server (HTML import)
+    ├── main.tsx             React entrypoint
+    ├── App.tsx              page shell and page switch
+    ├── components/          the component library, in five tiers
+    │   ├── base/            primitives: Box, Heading, Text, Icon
+    │   ├── ui/              Radix UI wrappers: Button, TextField, DropdownMenu,
+    │   │                    Dialog, Avatar, ScrollArea, ThemeSwitcher
+    │   ├── layout/          layout primitives and the page shell
+    │   ├── chat/            chat demo components
+    │   └── demo/            demo pages and their sections
+    ├── lib/                 pure logic, each module with a colocated test
+    │   ├── eliza/           reply generation for the chat
+    │   ├── scroll/          scroll-direction hook
+    │   ├── theme/           theme provider and the token contract test
+    │   ├── clsx.ts          class-name composition
+    │   ├── common-props.ts  the curated DOM prop surface
+    │   └── format.ts        text formatting
+    ├── styles/              shared, theme-agnostic stylesheets
+    └── assets/icons/        SVG icons, rendered inline by base/Icon
+```
 
-The components live in `src/components/`. Each tier has a README with its component
-list and usage examples:
+## Notes
 
-- [`src/components/README.md`](src/components/README.md) — tiers, rules, and how to add
-  a component.
-- [`src/components/layout/README.md`](src/components/layout/README.md) — layout
-  primitives and the page shell.
-- [`src/assets/icons/README.md`](src/assets/icons/README.md) — SVG icons and how to add
-  one.
-
-The package is a standalone project with its own `tsconfig.json`. It declares the
-import aliases `@components`, `@assets`, `@lib`, and `@styles`.
+* [Components logic](src/components/README.md). 
+* `tsconfig.json` declares the aliases `@components`, `@assets`, `@lib` and `@styles`.
