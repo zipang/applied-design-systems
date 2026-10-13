@@ -12,8 +12,11 @@ export const TYPE_STEP_OFFSETS: Record<TypeStepName, number> = {
 	display: 4
 };
 
+/** Format a `rem` value, trimming trailing zeros. */
+const remString = (rem: number): string => `${Number(rem.toFixed(4))}rem`;
+
 /** Format a pixel value as a `rem` string, trimming trailing zeros. */
-export const formatRem = (px: number): string => `${Number((px / 16).toFixed(4))}rem`;
+export const formatRem = (px: number): string => remString(px / 16);
 
 /**
  * Compute the type scale from a geometric ratio. The base step is always `1rem`, so
@@ -41,11 +44,51 @@ export const SPACE_STEP_UNITS: Record<SpaceStepName, number> = {
 	xxl: 12
 };
 
-/** Compute the spacing scale from a linear unit in pixels; `base` stays `1rem`. */
-export const spacingScaleRem = (unitPx = 4): Record<SpaceStepName, string> => {
+/**
+ * Step offsets from `base` for a geometric scale. The linear multipliers are not a
+ * geometric progression, so a geometric scale spaces the steps evenly around `base`.
+ */
+export const SPACE_STEP_OFFSETS: Record<SpaceStepName, number> = {
+	xs: -3,
+	sm: -2,
+	md: -1,
+	base: 0,
+	lg: 1,
+	xl: 2,
+	xxl: 3
+};
+
+/** Default linear unit in `rem`; four units make the `1rem` base. */
+export const SPACE_UNIT_DEFAULT = 0.25;
+
+/** Default geometric seed in `rem`; the seed occupies the `base` step. */
+export const SPACE_SEED_DEFAULT = 1;
+
+/** Default geometric multiplier: a wide enough spread for layout spacing. */
+export const SPACE_MULTIPLIER_DEFAULT = 1.5;
+
+/** Compute the linear spacing scale from a unit in `rem`; `base` is four units. */
+export const linearSpacingScaleRem = (
+	unitRem = SPACE_UNIT_DEFAULT
+): Record<SpaceStepName, string> => {
 	const scale = {} as Record<SpaceStepName, string>;
-	for (const [name, unit] of Object.entries(SPACE_STEP_UNITS) as [SpaceStepName, number][]) {
-		scale[name] = formatRem(unitPx * unit);
+	for (const [name, units] of Object.entries(SPACE_STEP_UNITS) as [SpaceStepName, number][]) {
+		scale[name] = remString(unitRem * units);
+	}
+	return scale;
+};
+
+/**
+ * Compute the geometric spacing scale from a seed and a multiplier. The seed lands on
+ * `base`, so the other steps grow outward as `seed * multiplier ** offset`.
+ */
+export const geometricSpacingScaleRem = (
+	seedRem = SPACE_SEED_DEFAULT,
+	multiplier = SPACE_MULTIPLIER_DEFAULT
+): Record<SpaceStepName, string> => {
+	const scale = {} as Record<SpaceStepName, string>;
+	for (const [name, offset] of Object.entries(SPACE_STEP_OFFSETS) as [SpaceStepName, number][]) {
+		scale[name] = remString(seedRem * multiplier ** offset);
 	}
 	return scale;
 };
