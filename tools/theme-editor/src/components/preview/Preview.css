@@ -31,6 +31,10 @@
 	justify-content: space-between;
 	gap: var(--space-md);
 	padding: var(--space-sm) 0;
+
+	&.is-end {
+		justify-content: flex-end;
+	}
 }
 
 .vz-meta__text {
@@ -274,25 +278,42 @@
 	flex: none;
 }
 
-/* Shapes */
+/* Shapes — every sample shares the card surface, so only the shape property reads. */
 .vz-rounded,
+.vz-borders,
 .vz-elevations {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-lg);
 }
 
-.vz-rounded__item {
+.vz-rounded__item,
+.vz-border {
 	display: grid;
 	gap: var(--space-xs);
 	justify-items: center;
 }
 
-.vz-rounded__tile {
+.vz-rounded__tile,
+.vz-border__sample,
+.vz-elevation__card {
+	background: var(--color-surface-card);
+}
+
+.vz-rounded__tile,
+.vz-border__sample {
 	width: 4.5rem;
 	height: 4.5rem;
-	background: var(--color-brand-accent);
+}
+
+.vz-rounded__tile {
 	border: var(--border-md) solid var(--color-text);
+}
+
+.vz-border__sample {
+	border-style: solid;
+	border-color: var(--color-text);
+	border-radius: var(--rounded-none);
 }
 
 .vz-elevation {
@@ -304,7 +325,6 @@
 .vz-elevation__card {
 	width: 5.5rem;
 	height: 5.5rem;
-	background: var(--color-surface-card);
 	border: var(--border-sm) solid var(--color-surface-alt);
 	border-radius: var(--rounded-md);
 }

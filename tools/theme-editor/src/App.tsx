@@ -22,7 +22,7 @@ const SECTIONS = [
 	{ id: "typography", label: "Type" },
 	{ id: "colors", label: "Color" },
 	{ id: "spacing", label: "Spacing" },
-	{ id: "shapes", label: "Shape" },
+	{ id: "shapes", label: "Shapes" },
 	{ id: "components", label: "Components" }
 ];
 

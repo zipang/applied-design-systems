@@ -40,6 +40,12 @@
 	color: var(--color-text-muted);
 }
 
+.editor-field.is-fixed .editor-field__input {
+	background: var(--color-surface-alt);
+	color: var(--color-text-muted);
+	cursor: default;
+}
+
 .editor-field__select {
 	cursor: pointer;
 	text-transform: none;

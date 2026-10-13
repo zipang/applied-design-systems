@@ -1,13 +1,14 @@
 import { Heading } from "@components/base/Heading";
 import { Text } from "@components/base/Text";
 import { EditableText } from "@components/editor/EditableText";
-import { NumberField, TextInput, TokenField } from "@components/editor/Fields";
+import { FixedField, NumberField, TextInput, TokenField } from "@components/editor/Fields";
 import { FontPicker } from "@components/editor/FontPicker";
 import { SettingsCog } from "@components/editor/SettingsCog";
 import { Button } from "@components/ui/Button";
 import { Tabs } from "@components/ui/Tabs";
 import { TextField } from "@components/ui/TextField";
 import { useAppState } from "@lib/app-state";
+import { clsx } from "@lib/clsx";
 import { resolveVariables } from "@lib/contract";
 import { contrastLevel, contrastRatio, isLight } from "@lib/contrast";
 import { TOKENS, type TokenValues } from "@lib/design-system";
@@ -23,6 +24,9 @@ const px = (values: TokenValues, variable: string): number => {
 	if (Number.isNaN(parsed)) return 0;
 	return raw.endsWith("px") ? parsed : parsed * 16;
 };
+/** A length token as a `rem` number, so length editors speak the contract's own unit. */
+const rem = (values: TokenValues, variable: string): number =>
+	Number((px(values, variable) / 16).toFixed(4));
 const resolved = (values: TokenValues, variable: string): string =>
 	resolveVariables(read(values, variable), values);
 const resolvedNumber = (values: TokenValues, variable: string): number =>
@@ -79,14 +83,17 @@ const SectionHeader: React.FC<{ index: string; title: string }> = ({ index, titl
 	</header>
 );
 
-/** The meta summary line plus the single settings cog, right-aligned like the reference. */
+/**
+ * The settings row: an optional meta summary line, plus the single settings cog. The cog is
+ * right-aligned like the reference; with no summary the row collapses onto the cog alone.
+ */
 const MetaRow: React.FC<{
-	summary: React.ReactNode;
+	summary?: React.ReactNode;
 	cogLabel: string;
 	children: React.ReactNode;
 }> = ({ summary, cogLabel, children }) => (
-	<div className="vz-meta">
-		<div className="vz-meta__text">{summary}</div>
+	<div className={clsx("vz-meta", { "is-end": summary === undefined })}>
+		{summary === undefined ? null : <div className="vz-meta__text">{summary}</div>}
 		<SettingsCog label={cogLabel}>{children}</SettingsCog>
 	</div>
 );
@@ -580,6 +587,8 @@ const ROUNDED_STEPS = ["none", "sm", "md", "lg", "full"].map((name) => ({
 	variable: `--rounded-${name}`,
 	label: name
 }));
+/** Radius steps the contract fixes: sentinel values, so the editor never edits them. */
+const FIXED_RADIUS_STEPS = new Set(["--rounded-none", "--rounded-full"]);
 const BORDER_STEPS = ["sm", "md", "lg"].map((name) => ({
 	variable: `--border-${name}`,
 	label: name
@@ -588,6 +597,12 @@ const ELEVATION_STEPS = ["sm", "md", "lg"].map((name) => ({
 	variable: `--elevation-${name}`,
 	label: name
 }));
+
+/** Border-width recipes: no stroke, and the 1-2-4 scale the contract documents. */
+const BORDER_PRESETS: Record<string, string[]> = {
+	none: ["0", "0", "0"],
+	"1-2-4": ["1px", "2px", "4px"]
+};
 
 const ELEVATION_PRESETS: Record<string, string[]> = {
 	flat: ["none", "none", "none"],
@@ -603,10 +618,28 @@ const ELEVATION_PRESETS: Record<string, string[]> = {
 	]
 };
 
-/** Shapes: radius presets, border widths, and elevation presets. */
+type ShapeTab = "radius" | "border" | "elevation";
+
+/** The settings cog's title per Shapes tab. */
+const SHAPE_COG_LABELS: Record<ShapeTab, string> = {
+	radius: "Radius Steps",
+	border: "Border Widths",
+	elevation: "Elevation Levels"
+};
+
+/** Shapes: Border radius, Border width, and Elevation tabs, with one settings cog per tab. */
 export const ShapesSection: React.FC = () => {
 	const { values, update } = useAppState();
-	const applyPreset = (name: string): void => {
+	const [tab, setTab] = useState<ShapeTab>("radius");
+
+	const applyBorderPreset = (name: string): void => {
+		const preset = BORDER_PRESETS[name];
+		if (!preset) return;
+		BORDER_STEPS.forEach((step, index) => {
+			update(step.variable, preset[index] ?? "0");
+		});
+	};
+	const applyElevationPreset = (name: string): void => {
 		const preset = ELEVATION_PRESETS[name];
 		if (!preset) return;
 		ELEVATION_STEPS.forEach((step, index) => {
@@ -616,72 +649,125 @@ export const ShapesSection: React.FC = () => {
 
 	return (
 		<section id="shapes" className="vz-section">
-			<SectionHeader index="04" title="Shape" />
-			<MetaRow
-				cogLabel="Radius Steps"
-				summary={BORDER_STEPS.map((step) => `${step.label} ${read(values, step.variable)}`).join(
-					" · "
+			<SectionHeader index="04" title="Shapes" />
+			<Tabs
+				tabs={[
+					{ key: "radius", label: "Border Radius" },
+					{ key: "border", label: "Border Width" },
+					{ key: "elevation", label: "Elevation" }
+				]}
+				active={tab}
+				onChange={(key) => setTab(key as ShapeTab)}
+			/>
+			<MetaRow cogLabel={SHAPE_COG_LABELS[tab]}>
+				{tab === "radius" ? (
+					ROUNDED_STEPS.map((step) =>
+						FIXED_RADIUS_STEPS.has(step.variable) ? (
+							<FixedField
+								key={step.variable}
+								label={step.label}
+								value={read(values, step.variable)}
+							/>
+						) : (
+							<NumberField
+								key={step.variable}
+								label={step.label}
+								suffix="rem"
+								min={0}
+								step={0.0625}
+								value={rem(values, step.variable)}
+								onChange={(value) => update(step.variable, formatRem(value * 16))}
+							/>
+						)
+					)
+				) : tab === "border" ? (
+					<>
+						{BORDER_STEPS.map((step) => (
+							<NumberField
+								key={step.variable}
+								label={step.label}
+								suffix="px"
+								min={0}
+								value={px(values, step.variable)}
+								onChange={(value) => update(step.variable, `${value}px`)}
+							/>
+						))}
+						<div className="vz-presets">
+							{Object.keys(BORDER_PRESETS).map((name) => (
+								<Button
+									key={name}
+									label={name}
+									size="sm"
+									variant="secondary"
+									onClick={() => applyBorderPreset(name)}
+								/>
+							))}
+						</div>
+					</>
+				) : (
+					<>
+						{ELEVATION_STEPS.map((step) => (
+							<TextInput
+								key={step.variable}
+								label={step.label}
+								value={read(values, step.variable)}
+								onChange={(value) => update(step.variable, value)}
+							/>
+						))}
+						<div className="vz-presets">
+							{Object.keys(ELEVATION_PRESETS).map((name) => (
+								<Button
+									key={name}
+									label={name}
+									size="sm"
+									variant="secondary"
+									onClick={() => applyElevationPreset(name)}
+								/>
+							))}
+						</div>
+					</>
 				)}
-			>
-				{ROUNDED_STEPS.map((step) => (
-					<NumberField
-						key={step.variable}
-						label={step.label}
-						suffix="px"
-						value={Math.round(px(values, step.variable))}
-						onChange={(value) =>
-							update(
-								step.variable,
-								step.variable === "--rounded-full" ? `${value}px` : formatRem(value)
-							)
-						}
-					/>
-				))}
-			</MetaRow>
-			<MetaRow
-				cogLabel="Elevation Levels"
-				summary={<span>{ELEVATION_PRESETS ? Object.keys(ELEVATION_PRESETS).join(" · ") : ""}</span>}
-			>
-				{ELEVATION_STEPS.map((step) => (
-					<TextInput
-						key={step.variable}
-						label={step.label}
-						value={read(values, step.variable)}
-						onChange={(value) => update(step.variable, value)}
-					/>
-				))}
-				<div className="vz-presets">
-					{Object.keys(ELEVATION_PRESETS).map((name) => (
-						<Button
-							key={name}
-							label={name}
-							size="sm"
-							variant="secondary"
-							onClick={() => applyPreset(name)}
-						/>
-					))}
-				</div>
 			</MetaRow>
 			<div className="vz-preview" data-ds-preview>
-				<span className="vz-label">Border radius</span>
-				<div className="vz-rounded">
-					{ROUNDED_STEPS.map((step) => (
-						<div className="vz-rounded__item" key={step.variable}>
-							<div className="vz-rounded__tile" style={{ borderRadius: `var(${step.variable})` }} />
-							<span className="vz-swatch__name">{step.label}</span>
-							<code className="vz-code">{read(values, step.variable)}</code>
-						</div>
-					))}
-				</div>
-				<span className="vz-label">Elevation</span>
-				<div className="vz-elevations">
-					{ELEVATION_STEPS.map((step) => (
-						<div className="vz-elevation" key={step.variable}>
-							<div className="vz-elevation__card" style={{ boxShadow: `var(${step.variable})` }} />
-							<code className="vz-code">{step.label}</code>
-						</div>
-					))}
-				</div>
+				{tab === "radius" ? (
+					<div className="vz-rounded">
+						{ROUNDED_STEPS.map((step) => (
+							<div className="vz-rounded__item" key={step.variable}>
+								<div
+									className="vz-rounded__tile"
+									style={{ borderRadius: `var(${step.variable})` }}
+								/>
+								<span className="vz-swatch__name">{step.label}</span>
+								<code className="vz-code">{read(values, step.variable)}</code>
+							</div>
+						))}
+					</div>
+				) : tab === "border" ? (
+					<div className="vz-borders">
+						{BORDER_STEPS.map((step) => (
+							<div className="vz-border" key={step.variable}>
+								<div
+									className="vz-border__sample"
+									style={{ borderWidth: `var(${step.variable})` }}
+								/>
+								<span className="vz-swatch__name">{step.label}</span>
+								<code className="vz-code">{read(values, step.variable)}</code>
+							</div>
+						))}
+					</div>
+				) : (
+					<div className="vz-elevations">
+						{ELEVATION_STEPS.map((step) => (
+							<div className="vz-elevation" key={step.variable}>
+								<div
+									className="vz-elevation__card"
+									style={{ boxShadow: `var(${step.variable})` }}
+								/>
+								<code className="vz-code">{step.label}</code>
+							</div>
+						))}
+					</div>
+				)}
 			</div>
 		</section>
 	);

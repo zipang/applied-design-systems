@@ -38,6 +38,24 @@ export const NumberField: React.FC<NumberFieldProps> = ({
 	</label>
 );
 
+export interface FixedFieldProps {
+	label: string;
+	value: string;
+}
+
+/**
+ * A read-only field for a step the contract fixes. It keeps the field chrome so the
+ * settings column stays aligned, but reads as inactive because no editor applies.
+ */
+export const FixedField: React.FC<FixedFieldProps> = ({ label, value }) => (
+	<label className="editor-field is-fixed">
+		<span className="editor-field__label">{label}</span>
+		<span className="editor-field__control">
+			<input className="editor-field__input" type="text" value={value} readOnly tabIndex={-1} />
+		</span>
+	</label>
+);
+
 export interface TextInputProps {
 	label: string;
 	value: string;
