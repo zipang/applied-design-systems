@@ -21,6 +21,9 @@ interface ContainerProps extends BoxProperties, CommonProps {
  * Centers content and applies horizontal padding. `width` picks the max width. The
  * inline padding is the default for the `px` box aspect, so callers can override any
  * box aspect (padding, margin, border, elevation, rounded, background).
+ *
+ * @param props The container props.
+ * @returns The rendered container element.
  */
 export const Container: React.FC<ContainerProps> = ({
 	as = "div",

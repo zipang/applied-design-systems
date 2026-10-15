@@ -18,6 +18,9 @@ interface IconProps extends CommonProps {
  * Renders a bundled SVG icon inline so its strokes follow `currentColor`. Give a
  * `label` for a meaningful icon. Without one the icon is decorative and hidden from
  * assistive technology.
+ *
+ * @param props The icon props.
+ * @returns The rendered icon element.
  */
 export const Icon: React.FC<IconProps> = ({ name, size = "md", label, className, ...rest }) => {
 	const a11y = label

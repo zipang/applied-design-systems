@@ -17,6 +17,9 @@ interface HStackProps extends BoxProperties, CommonProps {
 /**
  * Stacks children horizontally with an optional token gap, alignment, distribution,
  * and the full box surface.
+ *
+ * @param props The stack props.
+ * @returns The rendered horizontal stack.
  */
 export const HStack: React.FC<HStackProps> = ({
 	gap = "md",

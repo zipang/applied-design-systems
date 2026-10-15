@@ -78,7 +78,12 @@ const DEFAULT_RESPONSES = [
 
 const OPENING = "Good afternoon. I am Eliza. What would you like to discuss?";
 
-/** Reflect a captured phrase so the answer addresses the speaker. */
+/**
+ * Reflect a captured phrase so the answer addresses the speaker.
+ *
+ * @param phrase The captured phrase.
+ * @returns The reflected phrase.
+ */
 export const reflect = (phrase: string): string =>
 	phrase
 		.trim()
@@ -98,6 +103,8 @@ export interface Eliza {
 /**
  * Create a fresh ELIZA engine. Responses cycle deterministically, so a fresh engine
  * always answers the same way to the same input.
+ *
+ * @returns A fresh ELIZA engine.
  */
 export const createEliza = (): Eliza => {
 	let turn = 0;

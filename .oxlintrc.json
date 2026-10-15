@@ -1,0 +1,26 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["eslint", "typescript", "unicorn", "oxc", "react"],
+	"jsPlugins": ["./tools/oxlint/code-quality.ts"],
+	"categories": {
+		"correctness": "error"
+	},
+	"ignorePatterns": [
+		".agents/**",
+		".opencode/**",
+		".tmp/**",
+		"**/dist/**",
+		"node_modules/**",
+		"tools/**"
+	],
+	"rules": {
+		"curly": ["error", "all"],
+		"code-quality/require-exported-jsdoc": "error",
+		"code-quality/padding-before-statements": "error",
+		"no-var": "error",
+		"prefer-const": "error",
+		"no-console": "off",
+		"react/refs": "off",
+		"react/purity": "off"
+	}
+}

@@ -8,7 +8,12 @@ interface PageHeaderProps extends CommonProps {
 	className?: string;
 }
 
-/** The page's fixed top region. Scoped to the shell, so it is not a banner landmark. */
+/**
+ * The page's fixed top region. Scoped to the shell, so it is not a banner landmark.
+ *
+ * @param props The page header props.
+ * @returns The rendered page header.
+ */
 export const PageHeader: React.FC<PageHeaderProps> = ({ children, className, ...rest }) => (
 	<header className={clsx("layout-page-header", className)} {...acceptCommonProps(rest)}>
 		{children}

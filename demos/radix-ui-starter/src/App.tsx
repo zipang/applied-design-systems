@@ -11,6 +11,8 @@ import { useState } from "react";
 /**
  * Application shell. Composes the page layout and the shared site navigation, and
  * switches between the chat and components pages.
+ *
+ * @returns The rendered application shell.
  */
 export const App: React.FC = () => {
 	const [view, setView] = useState<View>("chat");

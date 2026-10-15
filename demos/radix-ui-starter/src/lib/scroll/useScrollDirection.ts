@@ -18,6 +18,10 @@ const sizeOf = (target: HTMLElement | null): number =>
  * null. The listener is passive and the value changes only when the direction flips,
  * so consumers re-render on reversal, not on every scroll event. Ported from
  * `react-headroom` and `use-scroll-direction` (both MIT).
+ *
+ * @param target The scroll container, or null to track the window.
+ * @param options The hook options.
+ * @returns The current vertical scroll direction.
  */
 export const useScrollDirection = (
 	target: HTMLElement | null,
@@ -26,6 +30,7 @@ export const useScrollDirection = (
 	const [direction, setDirection] = useState<ScrollDirection>("up");
 
 	useEffect(() => {
+		// oxlint-disable-next-line react/set-state-in-effect -- reset when the watched container changes
 		setDirection("up");
 
 		let previousTop = topOf(target);
@@ -78,6 +83,10 @@ export const useScrollDirection = (
  * Whether a reveal-on-scroll navigation is hidden. It hides while the tracked element is
  * scrolled down below the top, and returns at the top and on upward movement. Resets to
  * visible whenever the tracked element changes (for example on a page swap).
+ *
+ * @param target The scroll container, or null to track the window.
+ * @param options The hook options.
+ * @returns Whether the navigation is hidden.
  */
 export const useHideOnScroll = (
 	target: HTMLElement | null,
@@ -86,6 +95,7 @@ export const useHideOnScroll = (
 	const [hidden, setHidden] = useState(false);
 
 	useEffect(() => {
+		// oxlint-disable-next-line react/set-state-in-effect -- reset when the watched container changes
 		setHidden(false);
 
 		let previousTop = topOf(target);

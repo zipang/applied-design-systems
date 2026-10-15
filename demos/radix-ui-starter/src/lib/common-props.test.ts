@@ -46,6 +46,14 @@ describe("acceptCommonProps", () => {
 	});
 
 	test("exposes the named attribute list", () => {
-		expect(COMMON_ATTRIBUTES).toEqual(["id", "role", "title", "tabIndex", "hidden", "lang", "dir"]);
+		expect(COMMON_ATTRIBUTES).toEqual([
+			"id",
+			"role",
+			"title",
+			"tabIndex",
+			"hidden",
+			"lang",
+			"dir"
+		]);
 	});
 });

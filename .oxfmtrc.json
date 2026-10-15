@@ -1,0 +1,28 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"printWidth": 100,
+	"useTabs": true,
+	"tabWidth": 4,
+	"semi": true,
+	"singleQuote": false,
+	"trailingComma": "none",
+	"overrides": [
+		{
+			"files": ["*.yml", "*.yaml"],
+			"options": {
+				"tabWidth": 2
+			}
+		}
+	],
+	"ignorePatterns": [
+		"**/*.md",
+		"**/package.json",
+		"**/dist/**",
+		"skills/design-system-tokens/references/*.css",
+		"node_modules",
+		"out",
+		".opencode",
+		".tmp",
+		"assets"
+	]
+}

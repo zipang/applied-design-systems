@@ -37,6 +37,9 @@ const isCommonAttribute = (name: string): boolean =>
  * Copy the curated common attributes from `props`. Drops `className`, `style`,
  * `children`, unknown keys, and keys with an `undefined` value, so a component's own
  * props cannot leak onto the DOM.
+ *
+ * @param props The props to filter.
+ * @returns The accepted common attributes.
  */
 export const acceptCommonProps = <T extends object>(props: T): CommonProps => {
 	const accepted: Record<string, unknown> = {};

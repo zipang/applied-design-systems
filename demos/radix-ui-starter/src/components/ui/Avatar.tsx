@@ -15,6 +15,9 @@ interface AvatarProps {
 /**
  * Token-styled avatar with a text fallback. Sizes come from the spacing scale;
  * `shape` chooses between a circle (`rounded`) and square corners.
+ *
+ * @param props The avatar props.
+ * @returns The rendered avatar.
  */
 export const Avatar: React.FC<AvatarProps> = ({
 	fallback,

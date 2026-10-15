@@ -19,6 +19,9 @@ interface ThemeProviderProps {
  * Injects the active theme's stylesheet into a `<style>` element in `document.head`
  * and exposes the theme list. Each theme is a complete `:root` stylesheet, so
  * switching replaces the element and leaves the cascade unchanged.
+ *
+ * @param props The provider props.
+ * @returns The rendered provider.
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 	const [theme, setTheme] = useState<ThemeId>(DEFAULT_THEME);
@@ -34,13 +37,18 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 		};
 	}, [css]);
 
-	const value = useMemo<ThemeContextValue>(() => ({ theme, available: themes, setTheme }), [theme]);
+	const value = useMemo<ThemeContextValue>(
+		() => ({ theme, available: themes, setTheme }),
+		[theme]
+	);
 
 	return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
 
 /**
  * Read the active theme and the theme list. Throws outside a ThemeProvider.
+ *
+ * @returns The active theme id, the theme list, and the theme setter.
  */
 export const useTheme = (): ThemeContextValue => {
 	const value = useContext(ThemeContext);

@@ -10,6 +10,8 @@ import { useChat } from "./useChat";
 /**
  * The chat page regions. A sticky header and the transcript scroll in the page body;
  * the composer is pinned in the page footer.
+ *
+ * @returns The rendered chat page.
  */
 export const ChatPage: React.FC = () => {
 	const chat = useChat();

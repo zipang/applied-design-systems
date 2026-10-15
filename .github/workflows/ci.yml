@@ -13,7 +13,7 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      - run: bun run check
+      - run: bun run lint
       - run: bun run typecheck
       - run: bun test
       - run: bun run --cwd demos/radix-ui-starter build

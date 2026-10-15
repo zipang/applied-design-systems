@@ -45,6 +45,8 @@ const TAG_SAMPLES: BoxTag[] = [
 /**
  * The Box section: every background role, spacing prop, rounded value, border width and
  * color, elevation, and `as` tag, all driven by token props.
+ *
+ * @returns The rendered Box demo section.
  */
 export const BoxDemo: React.FC = () => (
 	<VStack gap="lg">

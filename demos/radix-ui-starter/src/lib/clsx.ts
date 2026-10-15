@@ -16,6 +16,9 @@ export type ClassValue =
  * ```ts
  * clsx("ui-button", { "is-loading": loading, "is-disabled": disabled });
  * ```
+ *
+ * @param values Class values to combine.
+ * @returns The combined class string.
  */
 export const clsx = (...values: ClassValue[]): string => {
 	const classes: string[] = [];

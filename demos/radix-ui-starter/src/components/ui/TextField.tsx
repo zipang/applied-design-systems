@@ -18,6 +18,9 @@ interface TextFieldProps {
 /**
  * Token-styled single-line text field with a label and an optional error message.
  * Named states are exposed as `is-invalid`, `is-disabled`, and `is-readonly`.
+ *
+ * @param props The text field props.
+ * @returns The rendered text field.
  */
 export const TextField: React.FC<TextFieldProps> = ({
 	id,

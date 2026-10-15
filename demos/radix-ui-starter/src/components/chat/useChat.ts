@@ -20,6 +20,8 @@ export interface Chat {
 /**
  * Own the Eliza conversation: messages, composer draft, attachment, and the reply
  * engine. The chat page binds the returned state and actions to its regions.
+ *
+ * @returns The conversation state and actions.
  */
 export const useChat = (): Chat => {
 	const [eliza] = useState(createEliza);

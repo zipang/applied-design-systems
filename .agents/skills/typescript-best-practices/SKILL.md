@@ -125,7 +125,7 @@ if (current == null) return "";
 ## Verification
 
 - [ ] `bun run typecheck` passes with zero errors.
-- [ ] `bun run check` passes with zero errors.
+- [ ] `bun run lint` passes with zero errors.
 - [ ] Every `unknown`, `any`, and cast is justified in the JSDoc.
 - [ ] No circular-alias errors. Recursive shapes use `interface`.
 

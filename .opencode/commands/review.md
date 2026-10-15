@@ -1,6 +1,8 @@
 ---
 description: Multi-axis code review
 ---
+First run `bun run format`, so the review reads formatted code and never reports formatting.
+
 Invoke the `follow-the-rules` skill to review the following aspects in the project: 
 $ARGUMENTS.
 

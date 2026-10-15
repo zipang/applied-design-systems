@@ -21,6 +21,9 @@ interface ComposerProps {
 /**
  * Message composer: an attachment preview, an attach control, a textarea, and a send
  * button. Enter sends; Shift+Enter starts a new line.
+ *
+ * @param props The composer props.
+ * @returns The rendered message composer.
  */
 export const Composer: React.FC<ComposerProps> = ({
 	draft,
@@ -92,7 +95,9 @@ export const Composer: React.FC<ComposerProps> = ({
 				<textarea
 					className="chat-composer__input"
 					value={draft}
-					placeholder={disabled ? "The conversation is over." : "Write what you are thinking…"}
+					placeholder={
+						disabled ? "The conversation is over." : "Write what you are thinking…"
+					}
 					aria-label="Message Eliza"
 					rows={1}
 					disabled={disabled}

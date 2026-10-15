@@ -44,7 +44,8 @@ themes/<name>/       one complete Design System per theme (DESIGN.md + design-to
 Install:  bun install                                  # from the repo root (workspaces)
 Dev:      bun run --cwd demos/radix-ui-starter dev
 Build:    bun run --cwd demos/radix-ui-starter build
-Check:    bun run check
+Lint:     bun run lint
+Format:   bun run format
 Test:     bun test
 ```
 

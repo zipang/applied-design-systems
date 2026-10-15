@@ -17,6 +17,9 @@ interface ThemeSwitcherProps {
 
 /**
  * Dropdown that selects the active theme from the registry, marking the active one.
+ *
+ * @param props The theme switcher props.
+ * @returns The rendered theme switcher.
  */
 export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
 	const { theme, available, setTheme } = useTheme();

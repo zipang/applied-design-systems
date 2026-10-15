@@ -10,6 +10,9 @@ interface DemoSectionProps {
 
 /**
  * A numbered, titled section of the components demo.
+ *
+ * @param props The section props.
+ * @returns The rendered section.
  */
 export const DemoSection: React.FC<DemoSectionProps> = ({ index, title, children }) => (
 	<section className="demo-section">

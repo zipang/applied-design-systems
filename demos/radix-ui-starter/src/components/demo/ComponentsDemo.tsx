@@ -43,6 +43,8 @@ const noop = (): void => undefined;
 /**
  * The components demo. Presents every part of the library in numbered sections so
  * agents and humans can see each variant and size in one place.
+ *
+ * @returns The rendered components gallery.
  */
 export const ComponentsDemo: React.FC = () => {
 	const [name, setName] = useState("");
@@ -112,7 +114,12 @@ export const ComponentsDemo: React.FC = () => {
 					<HStack gap="lg" wrap>
 						{ICON_NAMES.map((name) =>
 							ICON_SIZES.map((size) => (
-								<Icon key={`${name}-${size}`} name={name} size={size} label={`${name} (${size})`} />
+								<Icon
+									key={`${name}-${size}`}
+									name={name}
+									size={size}
+									label={`${name} (${size})`}
+								/>
 							))
 						)}
 					</HStack>
@@ -170,7 +177,10 @@ export const ComponentsDemo: React.FC = () => {
 				<DemoSection index={10} title="Dialog">
 					<Dialog>
 						<DialogTrigger>Open dialog</DialogTrigger>
-						<DialogContent title="Dialog title" description="A token-styled modal on any theme.">
+						<DialogContent
+							title="Dialog title"
+							description="A token-styled modal on any theme."
+						>
 							<HStack gap="sm" justify="end">
 								<Button label="Cancel" variant="secondary" />
 								<Button label="Confirm" variant="accent" />

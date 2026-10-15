@@ -55,6 +55,9 @@ type BoxElementProps = React.HTMLAttributes<HTMLElement> & {
  * A token-driven box. Every aspect prop accepts only a token-derived enum; the `as`
  * prop picks the emitted semantic tag. Forwards `ref` and the common HTML attributes to
  * the element, so it works as a Radix `asChild` target.
+ *
+ * @param props The box props.
+ * @returns The rendered element.
  */
 export const Box: React.FC<BoxProps> = ({
 	as = "div",

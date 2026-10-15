@@ -14,6 +14,9 @@ interface GridProps extends BoxProperties, CommonProps {
 
 /**
  * A grid with a fixed column count, an optional token gap, and the full box surface.
+ *
+ * @param props The grid props.
+ * @returns The rendered grid.
  */
 export const Grid: React.FC<GridProps> = ({
 	columns = 1,

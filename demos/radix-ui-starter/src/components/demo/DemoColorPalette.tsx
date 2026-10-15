@@ -25,6 +25,8 @@ const SWATCHES: Swatch[] = [
 /**
  * The color tokens as labeled swatches. Each swatch uses the token's background
  * utility class, so it re-themes with the active theme.
+ *
+ * @returns The rendered palette of swatches.
  */
 export const DemoColorPalette: React.FC = () => (
 	<div className="demo-color-palette">

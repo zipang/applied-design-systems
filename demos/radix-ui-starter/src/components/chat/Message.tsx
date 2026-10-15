@@ -13,6 +13,9 @@ interface MessageProps {
 /**
  * One chat message: a speaker label and a bubble. Eliza's bubbles sit left on the
  * alternate surface; the user's sit right on the dark surface.
+ *
+ * @param props The message props.
+ * @returns The rendered message.
  */
 export const Message: React.FC<MessageProps> = ({ message }) => {
 	const isEliza = message.speaker === "eliza";

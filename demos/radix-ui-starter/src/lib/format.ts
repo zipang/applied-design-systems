@@ -1,4 +1,9 @@
-/** Format a byte count as `B`, `KB`, or `MB`. */
+/**
+ * Format a byte count as `B`, `KB`, or `MB`.
+ *
+ * @param bytes The byte count.
+ * @returns The formatted byte count.
+ */
 export const formatBytes = (bytes: number): string => {
 	if (bytes < 1024) {
 		return `${bytes} B`;

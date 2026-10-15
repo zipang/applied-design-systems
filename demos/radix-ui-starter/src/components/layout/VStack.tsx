@@ -15,6 +15,9 @@ interface VStackProps extends BoxProperties, CommonProps {
 /**
  * Stacks children vertically with an optional token gap, cross-axis alignment, and the
  * full box surface.
+ *
+ * @param props The stack props.
+ * @returns The rendered vertical stack.
  */
 export const VStack: React.FC<VStackProps> = ({
 	gap = "md",

@@ -34,6 +34,9 @@ interface ButtonProps {
 
 /**
  * Token-styled button. Named states are exposed as `is-loading` and `is-disabled`.
+ *
+ * @param props The button props.
+ * @returns The rendered button.
  */
 export const Button: React.FC<ButtonProps> = ({
 	label,

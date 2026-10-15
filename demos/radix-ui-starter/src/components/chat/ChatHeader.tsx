@@ -8,7 +8,12 @@ interface ChatHeaderProps {
 	onReset: () => void;
 }
 
-/** Chat identity and the start-over action. */
+/**
+ * Chat identity and the start-over action.
+ *
+ * @param props The chat header props.
+ * @returns The rendered chat header.
+ */
 export const ChatHeader: React.FC<ChatHeaderProps> = ({ onReset }) => (
 	<header className="chat-header">
 		<div className="chat-header__identity">

@@ -12,7 +12,12 @@ interface DialogProps {
 	onOpenChange?: (open: boolean) => void;
 }
 
-/** Root of a modal dialog. Composes with {@link DialogTrigger} and {@link DialogContent}. */
+/**
+ * Root of a modal dialog. Composes with {@link DialogTrigger} and {@link DialogContent}.
+ *
+ * @param props The dialog props.
+ * @returns The rendered dialog root.
+ */
 export const Dialog: React.FC<DialogProps> = ({ children, open, onOpenChange }) => (
 	<DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
 		{children}
@@ -24,7 +29,12 @@ interface DialogTriggerProps {
 	className?: string;
 }
 
-/** Opens the dialog. Rendered as a button. */
+/**
+ * Opens the dialog. Rendered as a button.
+ *
+ * @param props The trigger props.
+ * @returns The rendered trigger.
+ */
 export const DialogTrigger: React.FC<DialogTriggerProps> = ({ children, className }) => (
 	<DialogPrimitive.Trigger className={clsx("ui-dialog__trigger", className)}>
 		{children}
@@ -42,6 +52,9 @@ interface DialogContentProps extends BoxProperties {
  * The portaled dialog surface, with a title, optional description, and a close button.
  * The surface is a `Box`: it inherits `BoxProperties`, so a caller can override any box
  * aspect, and the token defaults keep the dialog's own look.
+ *
+ * @param props The dialog content props.
+ * @returns The rendered dialog surface.
  */
 export const DialogContent: React.FC<DialogContentProps> = ({
 	title,

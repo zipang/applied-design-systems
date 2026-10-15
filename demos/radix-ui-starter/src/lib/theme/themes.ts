@@ -48,6 +48,9 @@ const FALLBACK_THEME: Theme = { id: DEFAULT_THEME, label: "Paper", css: "" };
 /**
  * Return the theme with the given id. Fall back to the default theme when the id is
  * unknown.
+ *
+ * @param id The theme identifier.
+ * @returns The matching theme, or the fallback theme.
  */
 export const getTheme = (id: string): Theme =>
 	themes.find((theme) => theme.id === id) ?? FALLBACK_THEME;

@@ -64,6 +64,9 @@ export interface BoxProperties {
  * Translate box aspect props into the scoped class string. The string always includes
  * the root `base-box` class, then the aspect classes in a stable order: uniform spacing
  * before its axis, so the axis class wins on equal specificity.
+ *
+ * @param props The box aspect props.
+ * @returns The scoped class string.
  */
 export const boxClassNames = ({
 	p,

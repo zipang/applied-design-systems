@@ -10,5 +10,9 @@ export interface PageScroll {
 
 export const PageScrollContext = createContext<PageScroll | null>(null);
 
-/** Read the page scroll state. Null when used outside a `PageLayout`. */
+/**
+ * Read the page scroll state. Null when used outside a `PageLayout`.
+ *
+ * @returns The page scroll state, or null outside a `PageLayout`.
+ */
 export const usePageScroll = (): PageScroll | null => useContext(PageScrollContext);

@@ -14,6 +14,9 @@ interface SiteNavigationHeaderProps extends CommonProps {
  * The primary site navigation. Collapses to zero height while the page body is scrolled
  * down and returns on scroll-up, so the body gains the space. While collapsed its
  * controls are inert and hidden from assistive technology.
+ *
+ * @param props The site navigation props.
+ * @returns The rendered navigation header.
  */
 export const SiteNavigationHeader: React.FC<SiteNavigationHeaderProps> = ({
 	children,

@@ -10,6 +10,9 @@ interface ScrollAreaProps {
 
 /**
  * A vertically scrollable region with a token-styled scrollbar.
+ *
+ * @param props The scroll area props.
+ * @returns The rendered scroll area.
  */
 export const ScrollArea: React.FC<ScrollAreaProps> = ({ children, className }) => (
 	<ScrollAreaPrimitive.Root className={clsx("ui-scroll-area", className)} type="auto">

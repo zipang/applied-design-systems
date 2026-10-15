@@ -20,7 +20,7 @@ still apply.
 - **Stylesheet import is the last import** in a component module.
 - **Logic is tested.** Colocate `<name>.test.ts` next to logic modules. Component
   rendering tests are intentionally omitted (see `src/components/AGENTS.md`).
-- Run `bun run check`, `bun run typecheck`, and `bun test` before committing.
+- Run `bun run lint`, `bun run typecheck`, and `bun test` before committing.
 
 ## Example
 

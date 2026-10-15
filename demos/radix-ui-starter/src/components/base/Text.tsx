@@ -21,6 +21,9 @@ interface TextProps extends CommonProps {
 /**
  * Renders body copy on the token type scale. Use this component instead of a raw `p`
  * or `span` for text.
+ *
+ * @param props The text props.
+ * @returns The rendered text element.
  */
 export const Text: React.FC<TextProps> = ({
 	size = "md",

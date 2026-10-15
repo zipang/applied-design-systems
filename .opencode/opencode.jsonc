@@ -1,0 +1,27 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	// Format every file that the write, edit, and patch tools change. Formatting is applied
+	// here rather than checked, so `oxfmt --check` is never needed in this project.
+	// The built-in `oxfmt` entry supplies the command; this extends its file list beyond
+	// JavaScript and TypeScript to the other languages oxfmt handles in this repo.
+	"formatter": {
+		"oxfmt": {
+			"extensions": [
+				".ts",
+				".tsx",
+				".mts",
+				".cts",
+				".js",
+				".jsx",
+				".mjs",
+				".cjs",
+				".css",
+				".json",
+				".jsonc",
+				".html",
+				".yaml",
+				".yml"
+			]
+		}
+	}
+}

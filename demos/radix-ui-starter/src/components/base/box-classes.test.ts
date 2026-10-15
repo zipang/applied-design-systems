@@ -57,7 +57,9 @@ describe("boxClassNames", () => {
 	test("maps every color role for background and borderColor", () => {
 		for (const role of BOX_COLORS) {
 			expect(boxClassNames({ background: role })).toBe(`${ROOT} ${ROOT}--bg-${role}`);
-			expect(boxClassNames({ borderColor: role })).toBe(`${ROOT} ${ROOT}--border-color-${role}`);
+			expect(boxClassNames({ borderColor: role })).toBe(
+				`${ROOT} ${ROOT}--border-color-${role}`
+			);
 		}
 	});
 

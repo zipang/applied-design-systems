@@ -10,6 +10,9 @@ interface DropdownMenuProps {
 /**
  * Root of a dropdown menu. Composes with {@link DropdownMenuTrigger},
  * {@link DropdownMenuContent}, and {@link DropdownMenuItem}.
+ *
+ * @param props The menu props.
+ * @returns The rendered menu root.
  */
 export const DropdownMenu: React.FC<DropdownMenuProps> = ({ children }) => (
 	<DropdownMenuPrimitive.Root>{children}</DropdownMenuPrimitive.Root>
@@ -20,7 +23,12 @@ interface DropdownMenuTriggerProps {
 	className?: string;
 }
 
-/** Opens the dropdown menu. Rendered as a button. */
+/**
+ * Opens the dropdown menu. Rendered as a button.
+ *
+ * @param props The trigger props.
+ * @returns The rendered trigger.
+ */
 export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
 	children,
 	className
@@ -36,7 +44,12 @@ interface DropdownMenuContentProps {
 	className?: string;
 }
 
-/** The portaled menu surface. */
+/**
+ * The portaled menu surface.
+ *
+ * @param props The content props.
+ * @returns The rendered menu surface.
+ */
 export const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
 	children,
 	align = "start",
@@ -60,7 +73,12 @@ interface DropdownMenuItemProps {
 	className?: string;
 }
 
-/** A selectable menu entry. Exposes `is-disabled` and `is-selected` classes. */
+/**
+ * A selectable menu entry. Exposes `is-disabled` and `is-selected` classes.
+ *
+ * @param props The item props.
+ * @returns The rendered menu item.
+ */
 export const DropdownMenuItem: React.FC<DropdownMenuItemProps> = ({
 	children,
 	onSelect,
@@ -76,7 +94,11 @@ export const DropdownMenuItem: React.FC<DropdownMenuItemProps> = ({
 	</DropdownMenuPrimitive.Item>
 );
 
-/** A horizontal separator between menu groups. */
+/**
+ * A horizontal separator between menu groups.
+ *
+ * @returns The rendered separator.
+ */
 export const DropdownMenuSeparator: React.FC = () => (
 	<DropdownMenuPrimitive.Separator className="ui-dropdown__separator" />
 );
@@ -85,7 +107,12 @@ interface DropdownMenuLabelProps {
 	children: React.ReactNode;
 }
 
-/** A non-interactive label inside the menu. */
+/**
+ * A non-interactive label inside the menu.
+ *
+ * @param props The label props.
+ * @returns The rendered menu label.
+ */
 export const DropdownMenuLabel: React.FC<DropdownMenuLabelProps> = ({ children }) => (
 	<DropdownMenuPrimitive.Label className="ui-dropdown__label">
 		{children}

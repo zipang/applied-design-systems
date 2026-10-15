@@ -12,11 +12,14 @@ interface MessageListProps {
 
 /**
  * The conversation transcript. Keeps the newest message in view as it grows.
+ *
+ * @param props The message list props.
+ * @returns The rendered transcript.
  */
 export const MessageList: React.FC<MessageListProps> = ({ messages, pending }) => {
 	const endElt = useRef<HTMLLIElement>(null);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: re-scroll whenever the transcript or the typing indicator changes.
+	// Re-scroll whenever the transcript or the typing indicator changes.
 	useEffect(() => {
 		endElt.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages, pending]);

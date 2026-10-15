@@ -16,6 +16,9 @@ interface PageLayoutProps extends CommonProps {
  * order does not matter. The scrolling body element is shared through the page scroll
  * context; holding the element (not a ref) lets consumers re-subscribe when a page swap
  * replaces the body.
+ *
+ * @param props The layout props.
+ * @returns The rendered application shell.
  */
 export const PageLayout: React.FC<PageLayoutProps> = ({ children, className, ...rest }) => {
 	const [element, setElement] = useState<HTMLElement | null>(null);

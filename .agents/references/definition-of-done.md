@@ -7,7 +7,7 @@ per task; this file is project-wide. It is referenced by the
 ## Every task
 
 - The change matches the acceptance criteria of its Ticket (`roadmap/TXXXX/plan.md`).
-- `bun run check` passes.
+- `bun run lint` passes.
 - `bun run typecheck` passes when JavaScript or TypeScript is touched.
 - `bun test` passes when behavior is touched.
 - Any documentation the change invalidates is updated in the same commit.

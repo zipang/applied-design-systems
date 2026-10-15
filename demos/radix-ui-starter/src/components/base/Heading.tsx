@@ -29,6 +29,9 @@ interface HeadingProps extends CommonProps {
 /**
  * Renders a heading element. `level` sets the tag; `size` sets the type size and
  * defaults to the level's step on the token scale.
+ *
+ * @param props The heading props.
+ * @returns The rendered heading element.
  */
 export const Heading: React.FC<HeadingProps> = ({
 	level = 2,
@@ -43,7 +46,11 @@ export const Heading: React.FC<HeadingProps> = ({
 	return (
 		<HeadingElt
 			ref={ref}
-			className={clsx("base-heading", `base-heading--${size ?? DEFAULT_SIZE[level]}`, className)}
+			className={clsx(
+				"base-heading",
+				`base-heading--${size ?? DEFAULT_SIZE[level]}`,
+				className
+			)}
 			{...acceptCommonProps(rest)}
 		>
 			{children}

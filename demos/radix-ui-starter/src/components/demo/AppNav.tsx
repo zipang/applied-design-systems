@@ -19,6 +19,9 @@ interface AppNavProps {
  * The site navigation shared by every page: a switch between the demo pages and the
  * theme picker. Rendered inside a `SiteNavigationHeader`, so it collapses with the
  * scroll.
+ *
+ * @param props The navigation props.
+ * @returns The rendered navigation.
  */
 export const AppNav: React.FC<AppNavProps> = ({ view, onNavigate, className }) => (
 	<Container as="nav" width="lg" className={clsx("demo-app-nav", className)}>
