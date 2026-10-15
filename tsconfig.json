@@ -16,5 +16,13 @@
 		"forceConsistentCasingInFileNames": true
 	},
 	"include": ["**/*.ts", "**/*.tsx"],
-	"exclude": ["node_modules", ".opencode", ".tmp", "demos", "tools/theme-editor"]
+	"exclude": [
+		"node_modules",
+		".opencode",
+		".tmp",
+		"demos",
+		"packages/design-tokens",
+		"packages/theme-editor",
+		"tools"
+	]
 }

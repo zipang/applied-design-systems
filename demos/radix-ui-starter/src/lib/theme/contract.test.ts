@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { CONTRAST_TOKENS, updateThemeContrastTokens } from "@applied-design-systems/design-tokens";
 import { parse } from "yaml";
-import { CONTRAST_TOKENS, updateThemeContrastTokens } from "../../../../../tools/contrast-tokens";
 
 const THEMES_DIR = join(import.meta.dir, "../../../themes");
 const THEME_IDS = readdirSync(THEMES_DIR)

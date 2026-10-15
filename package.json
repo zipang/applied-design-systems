@@ -5,20 +5,22 @@
 	"type": "module",
 	"workspaces": [
 		"demos/*",
-		"tools/*"
+		"packages/*"
 	],
 	"scripts": {
-		"check": "biome check .",
-		"check:fix": "biome check --write .",
-		"format": "biome format --write .",
-		"theme-editor": "bun run --cwd tools/theme-editor start",
-		"theme-editor:dev": "bun run --cwd tools/theme-editor dev",
-		"typecheck": "bun --check && bun run --cwd demos/radix-ui-starter typecheck && bun run --cwd tools/theme-editor typecheck",
+		"format": "oxfmt",
+		"lint": "oxlint",
+		"theme-editor": "bun run --cwd packages/theme-editor start",
+		"theme-editor:dev": "bun run --cwd packages/theme-editor dev",
+		"typecheck": "bun --check && bun run --cwd packages/design-tokens typecheck && bun run --cwd demos/radix-ui-starter typecheck && bun run --cwd packages/theme-editor typecheck",
 		"test": "bun test"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.15",
+		"@applied-design-systems/design-tokens": "workspace:*",
+		"@applied-design-systems/theme-editor": "workspace:*",
 		"@types/bun": "^1.4.3",
+		"oxfmt": "^0.73.0",
+		"oxlint": "^1.88.0",
 		"react-refresh": "^0.19.0",
 		"typescript": "^7.0.2",
 		"yaml": "^2.9.1"
