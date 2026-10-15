@@ -1,4 +1,4 @@
-# Design Systems Applied
+# Applied Design Systems
 
 ## The problem
 
@@ -23,14 +23,17 @@ When the destination is already known, a new start on every project is not accep
 
 ## Going one step further
 
-This repository completes the spec with rules, guides, and skills. It started as the
-`the-designer` recipe in the
-[AI lab project](https://github.com/zipang/the-ai-lab/tree/master/recipes/the-designer)
-and became its own foundation. Use it before every other recipe.
+This repository completes the spec with rules, guides, and skills. 
 
-The key idea is a **fixed standard list** of design tokens. The list covers the frugal
-needs of a Design System. The setup is minimalist by design. Each token lives in two
-places:
+The key idea is to enforce a **fixed standard list** of design tokens. 
+The list covers the frugal needs of a Design System. The setup is minimalist by design:
+
+- 16 semantic colors
+- 3 font families
+- 7 font sizes
+- constrained shapes (3 border radii, 3 border width, 3 elevations)
+
+Each token lives in two places:
 
 - in the `DESIGN.md` front matter, the source of truth for token values;
 - in a `design-tokens.css` stylesheet, which exposes every token as a CSS variable.
@@ -73,10 +76,35 @@ is the source of truth. Do not restate it here.
 .opencode/commands/   Slash commands for the spec, plan, and review workflow.
 skills/               The canonical, distributable design-system-tokens skill.
 roadmap/TXXXX/        Tickets: a spec.md and a plan.md for each unit of work.
-tools/                Token contract validator and sync CLI (planned).
+packages/             The published packages: the design-tokens core and the theme editor.
+tools/                Developer tooling: the oxlint code-quality plugin.
 demos/                Demonstration applications, starting with radix-ui-starter.
 AGENTS.md             Rules for AI agents that work in this repository.
 ```
+
+## Public npm packages
+
+`packages/` holds the two published npm packages. Both run under Bun.
+
+- **Theme Editor** ([`@applied-design-systems/theme-editor`](packages/theme-editor/README.md)) —
+  creates, edits, previews, and saves the `DESIGN.md` + `design-tokens.css` contract. After
+  the one-time bootstrap, run it from anywhere, with no global install:
+
+  ```sh
+  bun install        # once, from the repo root
+  bunx theme-editor  # or: bunx @applied-design-systems/theme-editor
+  ```
+
+- **Design tokens** ([`@applied-design-systems/design-tokens`](packages/design-tokens/README.md)) —
+  the validation tools. It parses, serializes, and validates the contract. It reads the
+  fixed token registry and derives the `--color-on-*` contrast tokens. The package is pure —
+  no React, no DOM — so a script or another tool can validate a contract headlessly:
+
+  ```ts
+  import { parseContract, validateContract } from "@applied-design-systems/design-tokens";
+  ```
+
+See [`packages/README.md`](packages/README.md) for the details and the publish procedure.
 
 See `AGENTS.md` for the rules that agents must follow.
 
@@ -84,13 +112,13 @@ See `AGENTS.md` for the rules that agents must follow.
 
 Entries are sorted alphabetically.
 
-- **AI agent**: A program powered by an LLM (such as opencode) that reads this repository, follows its rules and skills, and writes code for us. Our rules and guides target AI agents first, humans second.
+- **AI agent**: A program powered by an LLM (such as Claude code, Opencode) that reads this repository, follows its rules and skills, and writes code for the user. This project offers skills and intructions for AI agents to follow.
 - **Design System**: The single source of truth for the visual language of a product. In this project, it is a dual-file contract: `DESIGN.md` (the rationale and rules) plus `design-tokens.css` (the tokens as CSS variables).
-- **Design token**: A named visual value (a color, a font size, a spacing step) exposed as a CSS variable. The token list is fixed. Components must consume tokens with `var()` and never write raw values.
-- **Design tokens stylesheet**: The `design-tokens.css` file. It defines every design token as a CSS variable inside one `:root` block. It is the executable half of the Design System contract.
+- **Design token**: A named visual value (eg. a color, a font size, a spacing step) exposed as a CSS variable. The token list is fixed by design. Using tokens not listed in the contract will bring drift again.
+- **Design tokens stylesheet**: The `design-tokens.css` file. It exposes every design token as a CSS variable inside one `:root` block. It is the executable half of the Design System contract.
 - **DESIGN.md**: A markdown file at the root of a project, defined by the Google Labs spec. It holds the design tokens in YAML front matter and the component rules in prose.
 - **Drift**: The slow loss of visual coherence across the pages of a product: inconsistent sizes, borders, colors, or component behavior. Also called "design derive". Drift is the main problem this project fights.
 - **Recipe**: A self-contained procedure from our AI lab project (the-ai-lab) that combines prompts, rules, and tools to reach one goal. This project started as the "the-designer" recipe.
-- **Skill**: A markdown file under `.agents/skills/` that gives an AI agent instructions for one task (for example: apply the Design System, write a spec, commit changes). The agent loads a skill when its task matches the skill description. The canonical `design-system-tokens` skill lives at `skills/` for distribution. A proxy under `.agents/skills/` points to it.
+- **Skill**: A markdown file under `.agents/skills/` that gives an AI agent instructions for one task (for example: apply the Design System, write a spec, commit changes). The agent loads a skill when its task matches the skill description. The canonical `design-system-tokens` skill lives at `skills/design-system-tokens/SKILL.md` for distribution.
 - **Ticket**: A unit of planned work under `roadmap/TXXXX/` that holds a `spec.md` (requirements) and a `plan.md` (ordered tasks). Ticket IDs run from `T0001` to `T9999`.
 - **Vibe coding**: The practice of producing software by prompting an LLM without a plan or a specification. It is fast, but it causes the problems listed above.

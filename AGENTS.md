@@ -4,7 +4,7 @@ Project context and rules for AI agents working in this repository.
 
 ## What this project is
 
-**Design Systems Applied** documents an opinionated Design System approach on top of
+**Applied Design Systems** documents an opinionated Design System approach on top of
 the Google Labs `DESIGN.md` spec. It defines a fixed list of design tokens, a dual-file
 contract (`DESIGN.md` + `design-tokens.css`), and the skills and commands that keep a
 product visually coherent. It is primarily a reference and distribution repo, not an
@@ -21,7 +21,8 @@ skills/design-system-tokens/      Canonical, distributable copy of the core skil
   references/                     Example DESIGN.md, design-tokens.css, reset, utilities.
   presets/                        Elevation and border presets.
 roadmap/TXXXX/{spec,plan}.md      Tickets (units of planned work).
-tools/                            Token contract validator/sync CLI (planned).
+packages/                         Published packages: design-tokens (core) + theme-editor.
+tools/                            Developer tooling: the oxlint code-quality plugin.
 demos/                            Demonstration applications (agent-first examples).
 .tmp/                             Throwaway experiments. Never committed.
 ```
@@ -42,9 +43,9 @@ there; never duplicate token content into the proxy.
 
 - `DESIGN.md` front matter is the source of truth for token values; the `design-token.css` stylesheet 
   is the executable half of the contract.
+- The token list is **fixed**. Do not add undocumented tokens.
 - To change a token value, edit it in **both** `DESIGN.md` front matter and
   `design-tokens.css`, and keep them identical.
-- The token list is **fixed**. Do not add undocumented tokens.
 - Follow the token tables in `skills/design-system-tokens/SKILL.md` and its validation
   rules (section 10) for every edit.
 - Components consume tokens with `var()`; never write raw colors, sizes, or radii in
@@ -60,14 +61,20 @@ spec alive: update it before changing direction.
 
 ```
 Install:    bun install
-Check:      bun run check
+Lint:       bun run lint        # oxlint
+Format:     bun run format      # oxfmt
 Typecheck:  bun run typecheck
 Test:       bun test
-Format:     bun run format
 ```
 
-Run `bun run check` before committing any change to source, config, or CSS. For docs-only
-changes, use the `technical-writing` skill and the `follow-the-rules` skill instead.
+`bun run lint` lints every change to source, config, or CSS, including the local
+`code-quality` rules in `tools/oxlint/`. `bun run format` writes the formatted files.
+
+**Formatting is applied, never checked.** Do not run `oxfmt --check`. OpenCode formats
+every file the `write`, `edit`, and `patch` tools change (see `.opencode/opencode.jsonc`),
+so run `bun run format` only for edits made outside OpenCode. Formatter options live in
+`.oxfmtrc.json`; linter rules in `.oxlintrc.json`. For docs-only changes, use the
+`technical-writing` skill and the `follow-the-rules` skill instead.
 
 ## Commits
 
